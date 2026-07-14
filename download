@@ -172,11 +172,12 @@ input,select,textarea{font-family:inherit;}
 .role-label{font-size:0.72rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:#475569;margin-bottom:10px;}
 .role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
 .role-tab{position:relative;padding:16px;border-radius:16px;text-align:left;cursor:pointer;border:1.5px solid #E5E7EB;background:#fff;transition:all 0.25s ease;}
-.role-tab .ico{font-size:1.3rem;display:block;margin-bottom:8px;width:34px;height:34px;border-radius:9px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;transition:background 0.25s ease;}
+.role-tab .ico{margin-bottom:8px;width:34px;height:34px;border-radius:9px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;color:#334155;transition:background 0.25s ease,color 0.2s ease;}
+.role-tab .ico svg{width:18px;height:18px;}
 .role-tab-title{font-weight:800;font-size:0.92rem;color:#1E293B;transition:color 0.2s ease;}
 .role-tab-sub{font-size:0.72rem;color:#94A3B8;margin-top:3px;line-height:1.3;transition:color 0.2s ease;}
 .role-tab.on{border-color:transparent;background:linear-gradient(135deg,#211D45,#4A3A8F);box-shadow:0 10px 24px rgba(33,29,69,0.28);}
-.role-tab.on .ico{background:rgba(255,255,255,0.14);}
+.role-tab.on .ico{background:rgba(255,255,255,0.14);color:#fff;}
 .role-tab.on .role-tab-title{color:#fff;}
 .role-tab.on .role-tab-sub{color:rgba(255,255,255,0.72);}
 .role-tab.on::after{content:'';position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:#FFB347;}
@@ -1705,10 +1706,10 @@ input,select,textarea{font-family:inherit;}
       <div class="role-label">Bạn Là</div>
       <div class="role-tabs">
         <div class="role-tab on" id="roleStudent" onclick="selectRole('student')">
-          <span class="ico">🎓</span><div class="role-tab-title">Học Sinh</div><div class="role-tab-sub">Luyện đề & nhận điểm chi tiết</div>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span><div class="role-tab-title">Học Sinh</div><div class="role-tab-sub">Luyện đề & nhận điểm chi tiết</div>
         </div>
         <div class="role-tab" id="roleTeacher" onclick="selectRole('teacher')">
-          <span class="ico">🧑‍🏫</span><div class="role-tab-title">Giáo Viên</div><div class="role-tab-sub">Quản lý lớp & giao bài</div>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span><div class="role-tab-title">Giáo Viên</div><div class="role-tab-sub">Quản lý lớp & giao bài</div>
         </div>
       </div>
 
@@ -1737,7 +1738,7 @@ input,select,textarea{font-family:inherit;}
           <input id="password" class="login-input" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()">
         </div>
       </div>
-      <button class="btn-login" onclick="login()" id="loginBtn"><span id="loginBtnTxt">📚 Vào Học Ngay</span></button>
+      <button class="btn-login" onclick="login()" id="loginBtn"><span id="loginBtnTxt">Vào Học Ngay</span></button>
       <div class="login-foot" id="authSwitchFoot">
         Chưa có tài khoản? <a onclick="switchAuthMode('register')">Đăng ký ngay</a>
       </div>
@@ -2943,17 +2944,17 @@ function updateAuthUI(){
   if(authMode==='register'){
     heading.textContent='Tạo Tài Khoản Mới';
     sub.textContent='Nhập tên để bắt đầu hành trình luyện Writing của bạn.';
-    document.getElementById('loginBtnTxt').innerHTML='🚀 Tạo Tài Khoản & Bắt Đầu';
+    document.getElementById('loginBtnTxt').innerHTML='Tạo Tài Khoản & Bắt Đầu';
     foot.innerHTML='Đã có tài khoản? <a onclick="switchAuthMode(\'login\')">Đăng nhập</a>';
   } else if(currentRole==='teacher'){
     heading.textContent='Đăng Nhập Giáo Viên';
     sub.textContent='Nhập mật khẩu để quản lý lớp học.';
-    document.getElementById('loginBtnTxt').innerHTML='🔒 Đăng Nhập Giáo Viên';
+    document.getElementById('loginBtnTxt').innerHTML='Đăng Nhập Giáo Viên';
     foot.innerHTML='Dữ liệu được lưu cục bộ trên thiết bị của bạn.';
   } else {
     heading.textContent='Chào mừng bạn trở lại';
     sub.textContent='Đăng nhập để tiếp tục hành trình nâng band Writing.';
-    document.getElementById('loginBtnTxt').innerHTML='📚 Vào Học Ngay';
+    document.getElementById('loginBtnTxt').innerHTML='Vào Học Ngay';
     foot.innerHTML='Chưa có tài khoản? <a onclick="switchAuthMode(\'register\')">Đăng ký ngay</a>';
   }
 }
