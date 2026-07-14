@@ -248,7 +248,7 @@ input,select,textarea{font-family:inherit;}
 .nav-item:hover{background:var(--bg-soft);color:var(--text);}
 .nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--primary);border-radius:0 3px 3px 0;}
-.nav-item .ico{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;}
+.nav-item .ico{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;display:inline-block;transition:transform 0.15s ease-out;will-change:transform;}
 .nav-item .badge{margin-left:auto;background:var(--primary);color:white;font-size:0.65rem;font-weight:800;padding:2px 7px;border-radius:50px;}
 .nav-item.teacher-nav.active{background:var(--teacher-light);color:var(--teacher);}
 .nav-item.teacher-nav.active::before{background:var(--teacher);}
@@ -2993,6 +2993,25 @@ function logout(){
 }
 
 // ============ NAV ============
+function initNavDockEffect(){
+  const nav=document.getElementById('navMenu');
+  if(!nav||nav.dataset.dockInit) return;
+  nav.dataset.dockInit='1';
+  const maxScale=1.55, sigma=42;
+  nav.addEventListener('mousemove',(e)=>{
+    nav.querySelectorAll('.nav-item .ico').forEach(ic=>{
+      const r=ic.getBoundingClientRect();
+      const center=r.top+r.height/2;
+      const dist=Math.abs(e.clientY-center);
+      const scale=1+(maxScale-1)*Math.exp(-(dist*dist)/(2*sigma*sigma));
+      ic.style.transform=`scale(${scale.toFixed(3)})`;
+    });
+  });
+  nav.addEventListener('mouseleave',()=>{
+    nav.querySelectorAll('.nav-item .ico').forEach(ic=>{ic.style.transform='scale(1)';});
+  });
+}
+
 function buildNavMenu(){
   const menu=document.getElementById('navMenu');
   const label=document.getElementById('navSecLabel');
@@ -7068,6 +7087,7 @@ async function admBuildHTML(){
 // ============ INIT ============
 async function initApp(){
   selectRole('student');
+  initNavDockEffect();
   // initMusic() - Tắt auto-init, nhạc sẽ load khi user click nút
   // Sync from cloud (background, non-blocking for UI)
   try{
