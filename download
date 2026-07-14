@@ -6,7 +6,7 @@
 <title>Academic Writing Pro — IELTS Writing Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ========== RESET & VARIABLES ========== */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -167,22 +167,25 @@ input,select,textarea{font-family:inherit;}
 .hero-quote p{font-size:0.88rem;color:rgba(255,255,255,0.82);line-height:1.55;}
 
 .login-form{background:#FFFFFF;border-radius:32px;padding:38px;box-shadow:0 24px 60px rgba(15,23,42,0.35);}
-.login-form h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:6px;color:#1E293B;letter-spacing:-0.5px;}
+.login-form h2{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;margin-bottom:6px;color:#1E293B;letter-spacing:-0.3px;}
 .login-form .sub{color:#64748B;font-size:0.88rem;margin-bottom:20px;}
 .role-label{font-size:0.72rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:#475569;margin-bottom:10px;}
 .role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
-.role-tab{position:relative;padding:14px 14px;border-radius:14px;text-align:left;cursor:pointer;border:1.5px solid #E5E7EB;transition:all 0.25s ease;}
-.role-tab .ico{font-size:1.3rem;display:block;margin-bottom:6px;}
-.role-tab-title{font-weight:800;font-size:0.9rem;color:#1E293B;}
-.role-tab-sub{font-size:0.72rem;color:#94A3B8;margin-top:2px;line-height:1.3;}
-.role-tab.on{border-color:var(--lg-purple);background:rgba(109,94,249,0.06);box-shadow:0 0 0 4px rgba(109,94,249,0.1);}
-.role-tab.on::after{content:'';position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:var(--lg-purple);}
+.role-tab{position:relative;padding:16px;border-radius:16px;text-align:left;cursor:pointer;border:1.5px solid #E5E7EB;background:#fff;transition:all 0.25s ease;}
+.role-tab .ico{font-size:1.3rem;display:block;margin-bottom:8px;width:34px;height:34px;border-radius:9px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;transition:background 0.25s ease;}
+.role-tab-title{font-weight:800;font-size:0.92rem;color:#1E293B;transition:color 0.2s ease;}
+.role-tab-sub{font-size:0.72rem;color:#94A3B8;margin-top:3px;line-height:1.3;transition:color 0.2s ease;}
+.role-tab.on{border-color:transparent;background:linear-gradient(135deg,#211D45,#4A3A8F);box-shadow:0 10px 24px rgba(33,29,69,0.28);}
+.role-tab.on .ico{background:rgba(255,255,255,0.14);}
+.role-tab.on .role-tab-title{color:#fff;}
+.role-tab.on .role-tab-sub{color:rgba(255,255,255,0.72);}
+.role-tab.on::after{content:'';position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:#FFB347;}
 .role-tab.disabled{opacity:0.45;cursor:not-allowed;pointer-events:none;}
 
 .auth-tabs{position:relative;display:flex;gap:22px;border-bottom:1.5px solid #E5E7EB;margin-bottom:20px;}
 .auth-tab{padding:0 2px 12px;font-weight:700;font-size:0.9rem;color:#94A3B8;cursor:pointer;transition:color 0.2s ease;}
 .auth-tab.on{color:var(--lg-purple-dark);}
-.auth-tab-indicator{position:absolute;bottom:-1.5px;left:0;width:78px;height:2.5px;background:var(--lg-cta);border-radius:3px;transition:transform 0.28s ease;}
+.auth-tab-indicator{position:absolute;bottom:-1.5px;left:0;width:78px;height:2px;background:var(--lg-purple-dark);border-radius:3px;transition:transform 0.28s ease;}
 .auth-tabs.mode-register .auth-tab-indicator{transform:translateX(100px);}
 .auth-trust{font-size:0.72rem;color:#94A3B8;font-weight:700;margin-bottom:18px;letter-spacing:0.2px;}
 
