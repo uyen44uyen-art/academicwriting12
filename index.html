@@ -256,6 +256,10 @@ input,select,textarea{font-family:inherit;}
 .login-input{width:100%;padding:13px 16px 13px 46px;border:1.5px solid #E5E7EB;border-radius:12px;font-size:0.95rem;color:#1E293B;background:#fff;transition:all 0.2s ease;outline:none;}
 .login-input::placeholder{color:#94A3B8;}
 .login-input:focus{border-color:var(--lg-purple);box-shadow:0 0 0 4px rgba(109,94,249,0.15);}
+.login-input.has-toggle{padding-right:46px;}
+.input-wrap .pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#94A3B8;cursor:pointer;background:none;border:none;padding:4px;display:flex;transition:color 0.15s ease;}
+.input-wrap .pw-toggle:hover{color:var(--lg-purple);}
+.input-wrap .pw-toggle svg{width:18px;height:18px;}
 .btn-login{width:100%;padding:14px;background:var(--lg-cta);color:white;border-radius:12px;font-weight:800;font-size:0.95rem;letter-spacing:0.3px;box-shadow:0 10px 26px rgba(109,94,249,0.35);transition:all 0.25s ease;display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-login:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(109,94,249,0.45);filter:brightness(1.05);}
 .btn-login:active{transform:translateY(0);}
@@ -1835,14 +1839,16 @@ input,select,textarea{font-family:inherit;}
         <label id="studentPasswordLabel">Mật khẩu</label>
         <div class="input-wrap">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <input id="studentPassword" class="login-input" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()" autocomplete="off">
+          <input id="studentPassword" class="login-input has-toggle" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()" autocomplete="off">
+          <button type="button" class="pw-toggle" id="studentPasswordToggle" onclick="togglePasswordVisibility('studentPassword',this)" aria-label="Hiện/ẩn mật khẩu" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <div class="input-block" id="passwordGroup" style="display:none;">
         <label>Mật khẩu Giáo Viên</label>
         <div class="input-wrap">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <input id="password" class="login-input" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()">
+          <input id="password" class="login-input has-toggle" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()">
+          <button type="button" class="pw-toggle" id="passwordToggle" onclick="togglePasswordVisibility('password',this)" aria-label="Hiện/ẩn mật khẩu" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
       <button class="btn-login" onclick="login()" id="loginBtn"><span id="loginBtnTxt">Vào Học Ngay</span></button>
@@ -3134,6 +3140,15 @@ function updateAuthUI(){
     document.getElementById('studentPasswordLabel').textContent='Mật khẩu';
     document.getElementById('studentPassword').placeholder='Nhập mật khẩu...';
   }
+}
+
+const EYE_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>';
+function togglePasswordVisibility(inputId,btn){
+  const inp=document.getElementById(inputId);
+  const showing=inp.type==='text';
+  inp.type=showing?'password':'text';
+  btn.innerHTML=showing?EYE_ICON:EYE_OFF_ICON;
 }
 
 function showLoginError(msg){
