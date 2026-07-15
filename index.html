@@ -6,7 +6,7 @@
 <title>Academic Writing Pro — IELTS Writing Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ========== RESET & VARIABLES ========== */
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -115,55 +115,154 @@ input,select,textarea{font-family:inherit;}
 @keyframes wrongShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
 @keyframes floatY{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
 @keyframes orbDrift{0%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-30px) scale(1.1);}66%{transform:translate(-30px,20px) scale(0.95);}100%{transform:translate(0,0) scale(1);}}
+@keyframes heroPathFlow{to{stroke-dashoffset:-2000;}}
 @keyframes glowPulse{0%,100%{box-shadow:0 0 20px var(--primary-glow);}50%{box-shadow:0 0 40px var(--primary-glow);}}
 @keyframes ripple{from{transform:scale(0);opacity:1;}to{transform:scale(2.5);opacity:0;}}
 @keyframes confettiFall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
 @keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(0.985);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes btnSheen{to{transform:translateX(220%) skewX(-18deg);}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
 
 .fade-in{animation:fadeIn 0.4s ease;}
 .fade-in-up{animation:fadeInUp 0.5s ease both;}
 
+/* ========== MOTION SYSTEM ========== */
+:root{
+  --ease-out:cubic-bezier(0.22,1,0.36,1);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --dur-fast:0.18s; --dur-med:0.3s; --dur-slow:0.45s;
+}
+
+/* Staggered entrance: re-runs each time a page becomes visible */
+.dashboard-grid>.dash-card,.stat-grid>.stat-card,.levels-grid>.level-card,
+.content-grid>*,.topic-selector>.topic-btn{
+  animation:cardIn var(--dur-slow) var(--ease-out) both;
+}
+.dashboard-grid>*:nth-child(1),.stat-grid>*:nth-child(1),.levels-grid>*:nth-child(1),.content-grid>*:nth-child(1){animation-delay:0.03s;}
+.dashboard-grid>*:nth-child(2),.stat-grid>*:nth-child(2),.levels-grid>*:nth-child(2),.content-grid>*:nth-child(2){animation-delay:0.09s;}
+.dashboard-grid>*:nth-child(3),.stat-grid>*:nth-child(3),.levels-grid>*:nth-child(3),.content-grid>*:nth-child(3){animation-delay:0.15s;}
+.dashboard-grid>*:nth-child(4),.stat-grid>*:nth-child(4),.levels-grid>*:nth-child(4),.content-grid>*:nth-child(4){animation-delay:0.21s;}
+.dashboard-grid>*:nth-child(n+5),.stat-grid>*:nth-child(n+5),.levels-grid>*:nth-child(n+5),.content-grid>*:nth-child(n+5){animation-delay:0.27s;}
+.topic-selector>.topic-btn:nth-child(n){animation-delay:0s;}
+.topic-selector>.topic-btn:nth-child(1){animation-delay:0.02s;}
+.topic-selector>.topic-btn:nth-child(2){animation-delay:0.05s;}
+.topic-selector>.topic-btn:nth-child(3){animation-delay:0.08s;}
+.topic-selector>.topic-btn:nth-child(4){animation-delay:0.11s;}
+.topic-selector>.topic-btn:nth-child(5){animation-delay:0.14s;}
+.topic-selector>.topic-btn:nth-child(6){animation-delay:0.17s;}
+.topic-selector>.topic-btn:nth-child(7){animation-delay:0.20s;}
+.topic-selector>.topic-btn:nth-child(8){animation-delay:0.23s;}
+.practice-list>.practice-item{animation:cardIn 0.4s var(--ease-out) both;}
+.practice-list>.practice-item:nth-child(1){animation-delay:0.05s;}
+.practice-list>.practice-item:nth-child(2){animation-delay:0.10s;}
+.practice-list>.practice-item:nth-child(3){animation-delay:0.15s;}
+.practice-list>.practice-item:nth-child(4){animation-delay:0.20s;}
+.practice-list>.practice-item:nth-child(5){animation-delay:0.25s;}
+.practice-list>.practice-item:nth-child(6){animation-delay:0.30s;}
+
+/* Press feedback: subtle scale on tap/click */
+.btn:active,.btn-login:active,.topic-btn:active,.role-tab:active,.nav-item:active,
+.pomo-btn:active,.practice-actions button:active,.auth-tab:active{transform:scale(0.965);}
+
+/* Primary CTA sheen sweep on hover */
+.btn-primary,.btn-login{position:relative;overflow:hidden;}
+.btn-primary::after,.btn-login::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.32),transparent);transform:translateX(-140%) skewX(-18deg);pointer-events:none;}
+.btn-primary:hover::after,.btn-login:hover::after{animation:btnSheen 0.7s var(--ease-out);}
+
+/* Micro-interactions */
+.sidebar-logo-icon{transition:transform var(--dur-med) var(--ease-spring);}
+.sidebar-logo:hover .sidebar-logo-icon{transform:rotate(-8deg) scale(1.08);}
+.level-icon{transition:transform var(--dur-med) var(--ease-spring);}
+.level-card:hover .level-icon{transform:scale(1.12) rotate(3deg);}
+.dash-card-bg{transition:transform var(--dur-med) var(--ease-out),opacity var(--dur-med) ease;}
+.dash-card:hover .dash-card-bg{transform:scale(1.15) rotate(-6deg);opacity:0.9;}
+.user-ava{transition:transform var(--dur-med) var(--ease-spring);}
+.user-card:hover .user-ava{transform:scale(1.1);}
+
+/* Reduced motion: honor user preference */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+}
+
 /* ========== LOGIN PAGE ========== */
-.login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#0f0f23 0%,#1a1a3e 50%,#2d1b4e 100%);}
+:root{
+  --lg-purple:#6D5EF9;
+  --lg-purple-hover:#7B6EFF;
+  --lg-purple-dark:#5748F6;
+  --lg-pink:#EC4899;
+  --lg-pink-hover:#F35BA7;
+  --lg-highlight:linear-gradient(90deg,#FFB347,#FF6B9E,#C84EFF);
+  --lg-cta:linear-gradient(90deg,#6D5EF9 0%,#A855F7 50%,#EC4899 100%);
+}
+.login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#171533 0%,#24204F 35%,#3A2F77 65%,#8C2D78 100%);}
 .login-screen::before{content:'';position:absolute;inset:0;background:
-  radial-gradient(circle at 20% 30%, rgba(99,102,241,0.35), transparent 50%),
-  radial-gradient(circle at 80% 70%, rgba(236,72,153,0.3), transparent 50%),
-  radial-gradient(circle at 50% 50%, rgba(168,85,247,0.25), transparent 60%);
+  radial-gradient(circle at 20% 30%, rgba(109,94,249,0.32), transparent 50%),
+  radial-gradient(circle at 80% 70%, rgba(236,72,153,0.28), transparent 50%),
+  radial-gradient(circle at 50% 50%, rgba(200,78,255,0.22), transparent 60%);
   animation:fadeIn 1s ease;}
 .login-orb{position:absolute;border-radius:50%;filter:blur(60px);animation:orbDrift 14s ease-in-out infinite;}
-.login-orb.o1{width:380px;height:380px;background:rgba(99,102,241,0.4);top:-100px;left:-100px;}
-.login-orb.o2{width:320px;height:320px;background:rgba(236,72,153,0.35);bottom:-80px;right:-80px;animation-delay:-5s;}
-.login-orb.o3{width:260px;height:260px;background:rgba(168,85,247,0.4);top:40%;left:55%;animation-delay:-9s;}
+.login-orb.o1{width:380px;height:380px;background:rgba(109,94,249,0.38);top:-100px;left:-100px;}
+.login-orb.o2{width:320px;height:320px;background:rgba(236,72,153,0.32);bottom:-80px;right:-80px;animation-delay:-5s;}
+.login-orb.o3{width:260px;height:260px;background:rgba(200,78,255,0.35);top:40%;left:55%;animation-delay:-9s;}
+.hero-paths{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+.hero-paths svg{position:absolute;inset:0;width:100%;height:100%;}
+.hero-paths path{fill:none;stroke:#fff;stroke-dasharray:8 14;animation-name:heroPathFlow;animation-timing-function:linear;animation-iteration-count:infinite;}
 
-.login-card-wrap{position:relative;z-index:10;width:100%;max-width:1100px;display:grid;grid-template-columns:1fr 480px;gap:0;padding:24px;animation:fadeInUp 0.7s ease;}
-.login-hero{padding:60px 50px;color:white;display:flex;flex-direction:column;justify-content:center;}
-.login-hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(10px);padding:8px 16px;border-radius:50px;font-size:0.78rem;font-weight:700;letter-spacing:0.3px;width:fit-content;margin-bottom:28px;}
-.login-hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:3.6rem;font-weight:800;line-height:1.05;letter-spacing:-1.5px;margin-bottom:24px;}
-.login-hero h1 .em{background:linear-gradient(135deg,#fbbf24,#ec4899,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;}
-.login-hero .lead{font-size:1.05rem;opacity:0.85;line-height:1.6;margin-bottom:36px;max-width:480px;}
-.login-feats{display:flex;flex-direction:column;gap:14px;}
-.login-feat{display:flex;align-items:center;gap:14px;font-size:0.92rem;}
-.login-feat-icon{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:1px solid rgba(255,255,255,0.15);}
+.login-card-wrap{position:relative;z-index:10;width:100%;max-width:1120px;display:grid;grid-template-columns:1fr 480px;gap:0;padding:24px;animation:fadeInUp 0.7s ease;}
+.login-hero{position:relative;z-index:0;overflow:hidden;padding:48px 50px;color:white;display:flex;flex-direction:column;justify-content:center;}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.hero-brand{display:flex;align-items:center;gap:12px;}
+.hero-brand-icon{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.15rem;}
+.hero-brand-name{font-weight:800;font-size:0.98rem;letter-spacing:-0.2px;}
+.hero-brand-tag{font-size:0.68rem;color:rgba(255,255,255,0.6);letter-spacing:0.6px;text-transform:uppercase;font-weight:700;}
+.login-hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(18px);padding:8px 16px;border-radius:50px;font-size:0.78rem;font-weight:700;letter-spacing:0.3px;width:fit-content;margin-bottom:24px;color:rgba(255,255,255,0.82);}
+.login-hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:3.2rem;font-weight:800;line-height:1.08;letter-spacing:-1.5px;margin-bottom:18px;color:#fff;}
+.login-hero h1 em{font-style:italic;background:var(--lg-highlight);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;}
+.login-hero .lead{font-size:1rem;color:rgba(255,255,255,0.82);line-height:1.6;margin-bottom:28px;max-width:460px;}
+.hero-stats{display:flex;gap:28px;margin-bottom:26px;flex-wrap:wrap;}
+.hero-stat .v{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;background:var(--lg-highlight);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-stat .l{font-size:0.72rem;color:rgba(255,255,255,0.6);font-weight:700;letter-spacing:0.3px;text-transform:uppercase;margin-top:2px;}
 
-.login-form{background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border-radius:24px;padding:40px;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
-.login-form h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:6px;color:#0f172a;letter-spacing:-0.5px;}
-.login-form .sub{color:#64748b;font-size:0.92rem;margin-bottom:28px;}
-.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:5px;background:#f1f5f9;border-radius:14px;margin-bottom:24px;}
-.role-tab{padding:14px 12px;border-radius:10px;text-align:center;cursor:pointer;font-weight:700;font-size:0.88rem;color:#64748b;transition:all 0.3s ease;}
-.role-tab .ico{font-size:1.3rem;display:block;margin-bottom:4px;}
-.role-tab.on{background:white;color:var(--primary);box-shadow:0 4px 12px rgba(99,102,241,0.2);}
-.input-block{margin-bottom:18px;}
-.input-block label{display:block;font-size:0.82rem;font-weight:700;color:#334155;margin-bottom:8px;}
+.login-form{background:#FFFFFF;border-radius:32px;padding:38px;box-shadow:0 24px 60px rgba(15,23,42,0.35);}
+.login-form h2{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;margin-bottom:6px;color:#1E293B;letter-spacing:-0.3px;}
+.login-form .sub{color:#64748B;font-size:0.88rem;margin-bottom:20px;}
+.role-label{font-size:0.72rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:#475569;margin-bottom:10px;}
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+.role-tab{position:relative;padding:16px;border-radius:16px;text-align:left;cursor:pointer;border:1.5px solid #E5E7EB;background:#fff;transition:all 0.25s ease;}
+.role-tab .ico{margin-bottom:8px;width:34px;height:34px;border-radius:9px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;color:#334155;transition:background 0.25s ease,color 0.2s ease;}
+.role-tab .ico svg{width:18px;height:18px;}
+.role-tab-title{font-weight:800;font-size:0.92rem;color:#1E293B;transition:color 0.2s ease;}
+.role-tab-sub{font-size:0.72rem;color:#94A3B8;margin-top:3px;line-height:1.3;transition:color 0.2s ease;}
+.role-tab.on{border-color:transparent;background:linear-gradient(135deg,#211D45,#4A3A8F);box-shadow:0 10px 24px rgba(33,29,69,0.28);}
+.role-tab.on .ico{background:rgba(255,255,255,0.14);color:#fff;}
+.role-tab.on .role-tab-title{color:#fff;}
+.role-tab.on .role-tab-sub{color:rgba(255,255,255,0.72);}
+.role-tab.on::after{content:'';position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:#FFB347;}
+.role-tab.disabled{opacity:0.45;cursor:not-allowed;pointer-events:none;}
+
+.auth-tabs{position:relative;display:flex;gap:22px;border-bottom:1.5px solid #E5E7EB;margin-bottom:20px;}
+.auth-tab{padding:0 2px 12px;font-weight:700;font-size:0.9rem;color:#94A3B8;cursor:pointer;transition:color 0.2s ease;}
+.auth-tab.on{color:var(--lg-purple-dark);}
+.auth-tab-indicator{position:absolute;bottom:-1.5px;left:0;width:78px;height:2px;background:var(--lg-purple-dark);border-radius:3px;transition:transform 0.28s ease;}
+.auth-tabs.mode-register .auth-tab-indicator{transform:translateX(100px);}
+.auth-trust{font-size:0.72rem;color:#94A3B8;font-weight:700;margin-bottom:18px;letter-spacing:0.2px;}
+
+.input-block{margin-bottom:16px;}
+.input-block label{display:block;font-size:0.8rem;font-weight:700;color:#475569;margin-bottom:7px;}
 .input-wrap{position:relative;}
-.input-wrap .ic{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:1.05rem;pointer-events:none;}
-.login-input{width:100%;padding:13px 16px 13px 46px;border:2px solid #e2e8f0;border-radius:12px;font-size:0.95rem;color:#0f172a;background:white;transition:all 0.25s ease;outline:none;}
-.login-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,0.12);}
-.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--accent));color:white;border-radius:12px;font-weight:800;font-size:0.97rem;letter-spacing:0.3px;box-shadow:0 8px 24px rgba(99,102,241,0.35);transition:all 0.25s ease;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-login:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,0.45);}
+.input-wrap .ic{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#94A3B8;pointer-events:none;display:flex;}
+.input-wrap .ic svg{width:18px;height:18px;}
+.login-input{width:100%;padding:13px 16px 13px 46px;border:1.5px solid #E5E7EB;border-radius:12px;font-size:0.95rem;color:#1E293B;background:#fff;transition:all 0.2s ease;outline:none;}
+.login-input::placeholder{color:#94A3B8;}
+.login-input:focus{border-color:var(--lg-purple);box-shadow:0 0 0 4px rgba(109,94,249,0.15);}
+.btn-login{width:100%;padding:14px;background:var(--lg-cta);color:white;border-radius:12px;font-weight:800;font-size:0.95rem;letter-spacing:0.3px;box-shadow:0 10px 26px rgba(109,94,249,0.35);transition:all 0.25s ease;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(109,94,249,0.45);filter:brightness(1.05);}
 .btn-login:active{transform:translateY(0);}
 .login-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:11px 14px;border-radius:10px;font-size:0.85rem;font-weight:600;margin-bottom:16px;display:none;align-items:center;gap:8px;animation:fadeInDown 0.3s ease;}
 .login-err.show{display:flex;}
-.login-foot{text-align:center;margin-top:20px;font-size:0.78rem;color:#94a3b8;line-height:1.5;}
+.login-foot{text-align:center;margin-top:18px;font-size:0.78rem;color:#94A3B8;line-height:1.5;}
+.login-foot a{color:var(--lg-purple-dark);font-weight:700;cursor:pointer;}
 
 @media(max-width:900px){
   .login-card-wrap{grid-template-columns:1fr;max-width:480px;}
@@ -210,7 +309,7 @@ input,select,textarea{font-family:inherit;}
 .nav-item:hover{background:var(--bg-soft);color:var(--text);}
 .nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--primary);border-radius:0 3px 3px 0;}
-.nav-item .ico{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;}
+.nav-item .ico{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;display:inline-block;transition:transform 0.15s ease-out;will-change:transform;}
 .nav-item .badge{margin-left:auto;background:var(--primary);color:white;font-size:0.65rem;font-weight:800;padding:2px 7px;border-radius:50px;}
 .nav-item.teacher-nav.active{background:var(--teacher-light);color:var(--teacher);}
 .nav-item.teacher-nav.active::before{background:var(--teacher);}
@@ -259,7 +358,9 @@ input,select,textarea{font-family:inherit;}
   align-items:center;
   gap:28px;
   box-shadow:var(--shadow-xl);
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 45%,#f093fb 100%);
+  background-size:180% 180%;
+  animation:gradientShift 9s ease infinite;
 }
 .topic-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,0.18),transparent 70%);border-radius:50%;}
 .topic-hero::after{content:'';position:absolute;bottom:-100px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(255,255,255,0.1),transparent 70%);border-radius:50%;}
@@ -274,31 +375,39 @@ input,select,textarea{font-family:inherit;}
 
 /* ========== LEVEL CARDS ========== */
 .levels-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-.level-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:var(--shadow-md);transition:all 0.3s ease;position:relative;overflow:hidden;}
-.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));opacity:0;transition:opacity 0.3s ease;}
+.level-card{background:var(--bg-card);border:1px solid var(--border);border-radius:22px;padding:28px;box-shadow:var(--shadow-md);transition:all 0.3s ease;position:relative;overflow:hidden;}
+.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));}
+.level-card.b7::before{background:linear-gradient(90deg,var(--warning),#f97316);}
+.level-card.b8::before{background:linear-gradient(90deg,#a855f7,var(--primary));}
 .level-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--primary-light);}
-.level-card:hover::before{opacity:1;}
-.level-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-.level-icon{width:42px;height:42px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
-.level-card.b7 .level-icon{background:var(--warning-light);color:var(--warning);}
-.level-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-0.3px;}
-.level-score{margin-left:auto;background:var(--success-light);color:var(--success);padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:800;}
+.level-head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.level-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 18px var(--primary-glow);flex-shrink:0;}
+.level-card.b7 .level-icon{background:linear-gradient(135deg,var(--warning),#f97316);box-shadow:0 8px 18px rgba(245,158,11,0.35);}
+.level-card.b8 .level-icon{background:linear-gradient(135deg,#a855f7,var(--primary));box-shadow:0 8px 18px rgba(168,85,247,0.35);}
+.level-title-wrap{flex:1;min-width:0;}
+.level-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.3px;}
+.level-progress-track{height:5px;border-radius:3px;background:var(--bg-soft);margin-top:7px;overflow:hidden;}
+.level-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 0.4s ease;}
+.level-card.b7 .level-progress-fill{background:linear-gradient(90deg,var(--warning),#f97316);}
+.level-card.b8 .level-progress-fill{background:linear-gradient(90deg,#a855f7,var(--primary));}
+.level-score{background:var(--success-light);color:var(--success);padding:5px 13px;border-radius:50px;font-size:0.72rem;font-weight:800;flex-shrink:0;}
 .level-card.b7 .level-score{background:var(--warning-light);color:var(--warning);}
-.level-desc{color:var(--text-soft);font-size:0.88rem;line-height:1.55;margin-bottom:18px;}
-.practice-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.practice-item{padding:13px 14px;background:var(--bg-soft);border-radius:12px;border-left:4px solid var(--primary);display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all 0.2s ease;cursor:pointer;}
-.practice-item:hover{background:var(--primary-light);transform:translateX(4px);}
-.practice-num{width:32px;height:32px;border-radius:9px;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0;}
+.level-desc{color:var(--text-soft);font-size:0.87rem;line-height:1.55;margin-bottom:20px;}
+.practice-list{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.practice-item{padding:12px 14px;background:var(--bg-soft);border-radius:14px;border:1px solid transparent;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all 0.2s ease;cursor:pointer;}
+.practice-item:hover{background:var(--bg-elev);border-color:var(--primary-light);box-shadow:var(--shadow-sm);transform:translateY(-1px);}
+.practice-num{width:30px;height:30px;border-radius:9px;background:var(--bg-elev);color:var(--text-soft);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;flex-shrink:0;transition:all 0.2s ease;}
+.practice-item:hover .practice-num{background:var(--primary);color:#fff;border-color:transparent;}
 .practice-info{flex:1;min-width:0;}
-.practice-title-row{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.practice-desc-row{font-size:0.75rem;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.practice-status{display:flex;align-items:center;gap:8px;}
-.practice-pct{font-size:1.1rem;font-weight:800;}
-.practice-badge{font-size:0.65rem;background:var(--bg-elev);color:var(--text-soft);padding:2px 7px;border-radius:6px;font-weight:700;border:1px solid var(--border);}
-.practice-actions{display:flex;flex-direction:column;gap:5px;}
-.practice-actions button{padding:5px 11px;border-radius:7px;font-size:0.73rem;font-weight:700;transition:all 0.2s ease;white-space:nowrap;}
-.practice-actions .replay{background:var(--primary);color:white;}
-.practice-actions .replay:hover{background:var(--primary-dark);}
+.practice-title-row{font-size:0.87rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.practice-desc-row{font-size:0.74rem;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.practice-status{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.practice-pct{font-size:1.05rem;font-weight:800;}
+.practice-badge{font-size:0.64rem;background:var(--bg-elev);color:var(--text-soft);padding:3px 8px;border-radius:6px;font-weight:700;border:1px solid var(--border);}
+.practice-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.practice-actions button{padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;transition:all 0.2s ease;white-space:nowrap;}
+.practice-actions .replay{background:var(--primary);color:white;box-shadow:0 4px 10px var(--primary-glow);}
+.practice-actions .replay:hover{background:var(--primary-dark);transform:translateY(-1px);}
 .practice-actions .review{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
 .practice-actions .review:hover{background:var(--primary);color:white;}
 /* ========== BUTTONS ========== */
@@ -423,6 +532,7 @@ input,select,textarea{font-family:inherit;}
 
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:28px;}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:all 0.3s ease;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));}
 .stat-card.success::before{background:linear-gradient(90deg,var(--success),#34d399);}
@@ -744,17 +854,24 @@ input,select,textarea{font-family:inherit;}
 .autosave-status .dot{width:8px;height:8px;background:var(--success);border-radius:50%;}
 
 /* ========== FLASHCARDS / SAMPLE / GRAMMAR / VOCAB ========== */
-.content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+.content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start;}
 .sample-card{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.3s ease;}
 .sample-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-.sample-head{padding:22px 26px;color:white;background:linear-gradient(135deg,#667eea,#764ba2);position:relative;overflow:hidden;}
+.sample-head{padding:22px 26px;color:white;background:linear-gradient(135deg,#667eea,#764ba2);position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;min-height:260px;}
 .sample-head::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.1);border-radius:50%;}
 .sample-meta{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;position:relative;}
 .sample-tag{background:rgba(255,255,255,0.22);padding:3px 11px;border-radius:50px;font-size:0.74rem;font-weight:700;backdrop-filter:blur(8px);}
 .sample-tag.band{background:rgba(16,185,129,0.4);}
 .sample-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:6px;position:relative;letter-spacing:-0.3px;}
 .sample-q{font-size:0.85rem;opacity:0.92;font-style:italic;position:relative;line-height:1.5;}
-.sample-body{padding:24px 26px;}
+.sample-toggle-hint{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:14px;font-size:0.8rem;font-weight:700;opacity:0.9;position:relative;}
+.sample-toggle-hint .chevron{transition:transform 0.25s ease;font-size:0.7rem;}
+.sample-card.open .sample-toggle-hint .chevron{transform:rotate(180deg);}
+.sample-card.open .sample-toggle-hint .txt-closed{display:none;}
+.sample-toggle-hint .txt-open{display:none;}
+.sample-card.open .sample-toggle-hint .txt-open{display:inline;}
+.sample-body{padding:24px 26px;display:none;}
+.sample-card.open .sample-body{display:block;animation:fadeIn 0.25s ease;}
 .sample-body .essay{font-size:0.92rem;line-height:1.85;color:var(--text);white-space:pre-line;}
 .sample-score{margin-top:18px;padding:12px 16px;background:var(--success-light);border-left:4px solid var(--success);border-radius:8px;font-size:0.86rem;color:var(--success);font-weight:700;}
 
@@ -1376,13 +1493,20 @@ input,select,textarea{font-family:inherit;}
   .pomo-music-vol{width:60px;}
   .pomo-music-btn{width:36px;height:36px;font-size:0.95rem;}
 }
-.toast{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow-xl);display:flex;align-items:center;gap:12px;min-width:280px;max-width:380px;animation:slideInRight 0.3s ease;}
+.toast{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 14px 14px 16px;box-shadow:var(--shadow-xl);display:flex;align-items:flex-start;gap:11px;min-width:300px;max-width:380px;animation:slideInRight 0.3s cubic-bezier(0.34,1.56,0.64,1);transition:opacity 0.3s ease,transform 0.3s ease;}
 .toast.success{border-left:4px solid var(--success);}
 .toast.error{border-left:4px solid var(--danger);}
 .toast.info{border-left:4px solid var(--info);}
 .toast.warn{border-left:4px solid var(--warning);}
-.toast .ico{font-size:1.4rem;flex-shrink:0;}
-.toast .msg{font-size:0.88rem;color:var(--text);font-weight:600;}
+.toast .ico{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.toast .ico svg{width:15px;height:15px;}
+.toast.success .ico{background:var(--success-light);color:var(--success);}
+.toast.error .ico{background:var(--danger-light);color:var(--danger);}
+.toast.info .ico{background:var(--info-light);color:var(--info);}
+.toast.warn .ico{background:var(--warning-light);color:var(--warning);}
+.toast .msg{font-size:0.87rem;color:var(--text);font-weight:600;line-height:1.45;flex:1;padding-top:3px;}
+.toast-close{background:none;border:none;color:var(--text-mute);font-size:0.8rem;cursor:pointer;padding:3px 5px;border-radius:6px;flex-shrink:0;transition:all 0.15s ease;line-height:1;}
+.toast-close:hover{background:var(--bg-soft);color:var(--text);}
 
 /* ========== CONFETTI ========== */
 .confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;}
@@ -1642,46 +1766,61 @@ input,select,textarea{font-family:inherit;}
   <div class="login-orb o3"></div>
   <div class="login-card-wrap">
     <div class="login-hero">
-      <div class="badge">✨ IELTS Writing Pro</div>
-      <h1>Nâng Band<br>Writing <span class="em">Vượt Trội</span></h1>
+      <div class="hero-paths"><svg viewBox="0 0 696 316"><path d="M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875" stroke-width="0.5" style="stroke-opacity:0.138;animation-duration:18.0s;"/><path d="M-375 -195C-375 -195 -307 210 147 337C611 464 679 869 679 869" stroke-width="0.53" style="stroke-opacity:0.17;animation-duration:20.3s;"/><path d="M-370 -201C-370 -201 -302 204 142 331C606 458 674 863 674 863" stroke-width="0.56" style="stroke-opacity:0.202;animation-duration:22.6s;"/><path d="M-365 -207C-365 -207 -297 198 137 325C601 452 669 857 669 857" stroke-width="0.59" style="stroke-opacity:0.235;animation-duration:24.9s;"/><path d="M-360 -213C-360 -213 -292 192 132 319C596 446 664 851 664 851" stroke-width="0.62" style="stroke-opacity:0.267;animation-duration:27.2s;"/><path d="M-355 -219C-355 -219 -287 186 127 313C591 440 659 845 659 845" stroke-width="0.65" style="stroke-opacity:0.299;animation-duration:29.5s;"/><path d="M-350 -225C-350 -225 -282 180 122 307C586 434 654 839 654 839" stroke-width="0.68" style="stroke-opacity:0.331;animation-duration:31.8s;"/><path d="M-345 -231C-345 -231 -277 174 117 301C581 428 649 833 649 833" stroke-width="0.71" style="stroke-opacity:0.363;animation-duration:18.0s;"/><path d="M-340 -237C-340 -237 -272 168 112 295C576 422 644 827 644 827" stroke-width="0.74" style="stroke-opacity:0.396;animation-duration:20.3s;"/><path d="M-335 -243C-335 -243 -267 162 107 289C571 416 639 821 639 821" stroke-width="0.77" style="stroke-opacity:0.428;animation-duration:22.6s;"/><path d="M-330 -249C-330 -249 -262 156 102 283C566 410 634 815 634 815" stroke-width="0.8" style="stroke-opacity:0.46;animation-duration:24.9s;"/><path d="M-325 -255C-325 -255 -257 150 97 277C561 404 629 809 629 809" stroke-width="0.83" style="stroke-opacity:0.492;animation-duration:27.2s;"/><path d="M-320 -261C-320 -261 -252 144 92 271C556 398 624 803 624 803" stroke-width="0.86" style="stroke-opacity:0.524;animation-duration:29.5s;"/><path d="M-315 -267C-315 -267 -247 138 87 265C551 392 619 797 619 797" stroke-width="0.89" style="stroke-opacity:0.55;animation-duration:31.8s;"/></svg><svg viewBox="0 0 696 316"><path d="M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875" stroke-width="0.5" style="stroke-opacity:0.138;animation-duration:18.0s;"/><path d="M-385 -195C-385 -195 -317 210 157 337C621 464 689 869 689 869" stroke-width="0.53" style="stroke-opacity:0.17;animation-duration:20.3s;"/><path d="M-390 -201C-390 -201 -322 204 162 331C626 458 694 863 694 863" stroke-width="0.56" style="stroke-opacity:0.202;animation-duration:22.6s;"/><path d="M-395 -207C-395 -207 -327 198 167 325C631 452 699 857 699 857" stroke-width="0.59" style="stroke-opacity:0.235;animation-duration:24.9s;"/><path d="M-400 -213C-400 -213 -332 192 172 319C636 446 704 851 704 851" stroke-width="0.62" style="stroke-opacity:0.267;animation-duration:27.2s;"/><path d="M-405 -219C-405 -219 -337 186 177 313C641 440 709 845 709 845" stroke-width="0.65" style="stroke-opacity:0.299;animation-duration:29.5s;"/><path d="M-410 -225C-410 -225 -342 180 182 307C646 434 714 839 714 839" stroke-width="0.68" style="stroke-opacity:0.331;animation-duration:31.8s;"/><path d="M-415 -231C-415 -231 -347 174 187 301C651 428 719 833 719 833" stroke-width="0.71" style="stroke-opacity:0.363;animation-duration:18.0s;"/><path d="M-420 -237C-420 -237 -352 168 192 295C656 422 724 827 724 827" stroke-width="0.74" style="stroke-opacity:0.396;animation-duration:20.3s;"/><path d="M-425 -243C-425 -243 -357 162 197 289C661 416 729 821 729 821" stroke-width="0.77" style="stroke-opacity:0.428;animation-duration:22.6s;"/><path d="M-430 -249C-430 -249 -362 156 202 283C666 410 734 815 734 815" stroke-width="0.8" style="stroke-opacity:0.46;animation-duration:24.9s;"/><path d="M-435 -255C-435 -255 -367 150 207 277C671 404 739 809 739 809" stroke-width="0.83" style="stroke-opacity:0.492;animation-duration:27.2s;"/><path d="M-440 -261C-440 -261 -372 144 212 271C676 398 744 803 744 803" stroke-width="0.86" style="stroke-opacity:0.524;animation-duration:29.5s;"/><path d="M-445 -267C-445 -267 -377 138 217 265C681 392 749 797 749 797" stroke-width="0.89" style="stroke-opacity:0.55;animation-duration:31.8s;"/></svg></div>
+      <div class="hero-top">
+        <div class="hero-brand">
+          <div class="hero-brand-icon">📝</div>
+          <div><div class="hero-brand-name">IELTS Writing Pro</div><div class="hero-brand-tag">Writing Studio</div></div>
+        </div>
+      </div>
+      <div class="badge">✨ Dành riêng cho Task 2 · Band 6.5 → 8.0</div>
+      <h1>Nâng Band<br><em>Writing Vượt Trội</em></h1>
       <p class="lead">Hệ thống luyện IELTS Writing Task 2 thông minh — bám sát đề thi thật, phân tích chi tiết, theo dõi tiến độ qua từng ngày.</p>
-      <div class="login-feats">
-        <div class="login-feat"><div class="login-feat-icon">📚</div><span>8 chủ đề học thuật · 96+ bài luyện tập</span></div>
-        <div class="login-feat"><div class="login-feat-icon">📊</div><span>Analytics chi tiết theo topic & band</span></div>
-        <div class="login-feat"><div class="login-feat-icon">⏱️</div><span>Pomodoro timer · Daily goal · Streak tracking</span></div>
-        <div class="login-feat"><div class="login-feat-icon">✍️</div><span>Writing editor đầy đủ · Auto-save</span></div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="v">96+</div><div class="l">Bài luyện tập</div></div>
+        <div class="hero-stat"><div class="v">8</div><div class="l">Chủ đề học thuật</div></div>
+        <div class="hero-stat"><div class="v">100%</div><div class="l">Miễn phí</div></div>
       </div>
     </div>
     <div class="login-form">
-      <h2>Xin chào! 👋</h2>
-      <div class="sub">Chọn vai trò và đăng nhập để bắt đầu</div>
+      <div class="role-label">Bạn Là</div>
       <div class="role-tabs">
         <div class="role-tab on" id="roleStudent" onclick="selectRole('student')">
-          <span class="ico">👨‍🎓</span><div>Học Sinh</div>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span><div class="role-tab-title">Học Sinh</div><div class="role-tab-sub">Luyện đề & nhận điểm chi tiết</div>
         </div>
         <div class="role-tab" id="roleTeacher" onclick="selectRole('teacher')">
-          <span class="ico">👨‍🏫</span><div>Giáo Viên</div>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span><div class="role-tab-title">Giáo Viên</div><div class="role-tab-sub">Quản lý lớp & giao bài</div>
         </div>
       </div>
+
+      <div class="auth-tabs mode-login" id="authTabs">
+        <div class="auth-tab on" id="authTabLogin" onclick="switchAuthMode('login')">Đăng nhập</div>
+        <div class="auth-tab" id="authTabRegister" onclick="switchAuthMode('register')">Đăng ký</div>
+        <div class="auth-tab-indicator"></div>
+      </div>
+      <div class="auth-trust">Nhanh · An toàn · Miễn phí</div>
+
+      <h2 id="authHeading">Chào mừng bạn trở lại</h2>
+      <div class="sub" id="authSub">Đăng nhập để tiếp tục hành trình nâng band Writing.</div>
+
       <div class="login-err" id="loginError">⚠️ <span id="loginErrorMsg"></span></div>
       <div class="input-block" id="usernameGroup">
         <label>Tên của bạn</label>
         <div class="input-wrap">
-          <span class="ic">👤</span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <input id="username" class="login-input" type="text" placeholder="Nhập tên..." onkeypress="if(event.key==='Enter')login()" autocomplete="off">
         </div>
       </div>
       <div class="input-block" id="passwordGroup" style="display:none;">
         <label>Mật khẩu Giáo Viên</label>
         <div class="input-wrap">
-          <span class="ic">🔒</span>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
           <input id="password" class="login-input" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()">
         </div>
       </div>
-      <button class="btn-login" onclick="login()" id="loginBtn"><span id="loginBtnTxt">📚 Vào Học Ngay</span></button>
-      <div class="login-foot">
-        Bằng cách đăng nhập, bạn đồng ý với điều khoản sử dụng.<br>
-        Dữ liệu được lưu cục bộ trên thiết bị của bạn.
+      <button class="btn-login" onclick="login()" id="loginBtn"><span id="loginBtnTxt">Vào Học Ngay</span></button>
+      <div class="login-foot" id="authSwitchFoot">
+        Chưa có tài khoản? <a onclick="switchAuthMode('register')">Đăng ký ngay</a>
       </div>
     </div>
   </div>
@@ -2824,14 +2963,25 @@ function toggleTheme(){
 applyTheme();
 
 // ============ TOAST ============
+const TOAST_ICONS={
+  success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>',
+  error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+};
+function closeToast(t){
+  if(!t||!t.isConnected)return;
+  clearTimeout(t.dataset.timer);
+  t.style.opacity='0';t.style.transform='translateX(100%) scale(0.9)';
+  setTimeout(()=>t.remove(),300);
+}
 function toast(msg,type='info',duration=2800){
   const w=document.getElementById('toastWrap');
   const t=document.createElement('div');
   t.className='toast '+type;
-  const ico={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'}[type]||'ℹ️';
-  t.innerHTML=`<span class="ico">${ico}</span><div class="msg">${msg}</div>`;
+  t.innerHTML=`<span class="ico">${TOAST_ICONS[type]||TOAST_ICONS.info}</span><div class="msg">${msg}</div><button class="toast-close" onclick="closeToast(this.closest('.toast'))" aria-label="Đóng">✕</button>`;
   w.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(100%)';setTimeout(()=>t.remove(),300);},duration);
+  t.dataset.timer=setTimeout(()=>closeToast(t),duration);
 }
 
 // ============ CONFETTI ============
@@ -2855,14 +3005,49 @@ function confetti(){
 }
 
 // ============ LOGIN ============
+let authMode='login';
+
 function selectRole(role){
+  if(authMode==='register' && role==='teacher') return;
   currentRole=role;
   document.getElementById('roleStudent').classList.toggle('on',role==='student');
   document.getElementById('roleTeacher').classList.toggle('on',role==='teacher');
   document.getElementById('usernameGroup').style.display=role==='student'?'block':'none';
   document.getElementById('passwordGroup').style.display=role==='teacher'?'block':'none';
-  document.getElementById('loginBtnTxt').innerHTML=role==='student'?'📚 Vào Học Ngay':'🔒 Đăng Nhập Giáo Viên';
   document.getElementById('loginError').classList.remove('show');
+  updateAuthUI();
+}
+
+function switchAuthMode(mode){
+  authMode=mode;
+  document.getElementById('authTabLogin').classList.toggle('on',mode==='login');
+  document.getElementById('authTabRegister').classList.toggle('on',mode==='register');
+  document.getElementById('authTabs').classList.toggle('mode-register',mode==='register');
+  document.getElementById('roleTeacher').classList.toggle('disabled',mode==='register');
+  if(mode==='register' && currentRole==='teacher'){selectRole('student');return;}
+  updateAuthUI();
+}
+
+function updateAuthUI(){
+  const heading=document.getElementById('authHeading');
+  const sub=document.getElementById('authSub');
+  const foot=document.getElementById('authSwitchFoot');
+  if(authMode==='register'){
+    heading.textContent='Tạo Tài Khoản Mới';
+    sub.textContent='Nhập tên để bắt đầu hành trình luyện Writing của bạn.';
+    document.getElementById('loginBtnTxt').innerHTML='Tạo Tài Khoản & Bắt Đầu';
+    foot.innerHTML='Đã có tài khoản? <a onclick="switchAuthMode(\'login\')">Đăng nhập</a>';
+  } else if(currentRole==='teacher'){
+    heading.textContent='Đăng Nhập Giáo Viên';
+    sub.textContent='Nhập mật khẩu để quản lý lớp học.';
+    document.getElementById('loginBtnTxt').innerHTML='Đăng Nhập Giáo Viên';
+    foot.innerHTML='Dữ liệu được lưu cục bộ trên thiết bị của bạn.';
+  } else {
+    heading.textContent='Chào mừng bạn trở lại';
+    sub.textContent='Đăng nhập để tiếp tục hành trình nâng band Writing.';
+    document.getElementById('loginBtnTxt').innerHTML='Vào Học Ngay';
+    foot.innerHTML='Chưa có tài khoản? <a onclick="switchAuthMode(\'register\')">Đăng ký ngay</a>';
+  }
 }
 
 function showLoginError(msg){
@@ -2900,10 +3085,30 @@ function logout(){
   currentUser='';selectedStudent=null;
   if(edTimerInterval){clearInterval(edTimerInterval);edTimerInterval=null;edTimerRunning=false;}
   if(pomoInterval){clearInterval(pomoInterval);pomoInterval=null;pomoRunning=false;}
+  switchAuthMode('login');
   selectRole('student');
 }
 
 // ============ NAV ============
+function initNavDockEffect(){
+  const nav=document.getElementById('navMenu');
+  if(!nav||nav.dataset.dockInit) return;
+  nav.dataset.dockInit='1';
+  const maxScale=1.55, sigma=42;
+  nav.addEventListener('mousemove',(e)=>{
+    nav.querySelectorAll('.nav-item .ico').forEach(ic=>{
+      const r=ic.getBoundingClientRect();
+      const center=r.top+r.height/2;
+      const dist=Math.abs(e.clientY-center);
+      const scale=1+(maxScale-1)*Math.exp(-(dist*dist)/(2*sigma*sigma));
+      ic.style.transform=`scale(${scale.toFixed(3)})`;
+    });
+  });
+  nav.addEventListener('mouseleave',()=>{
+    nav.querySelectorAll('.nav-item .ico').forEach(ic=>{ic.style.transform='scale(1)';});
+  });
+}
+
 function buildNavMenu(){
   const menu=document.getElementById('navMenu');
   const label=document.getElementById('navSecLabel');
@@ -2912,7 +3117,6 @@ function buildNavMenu(){
     menu.innerHTML=`
       <button class="nav-item active" data-page="home" onclick="navTo('home')"><span class="ico">🏠</span><span>Home</span></button>
       <button class="nav-item" data-page="practice" onclick="navTo('practice')"><span class="ico">✏️</span><span>Practice</span></button>
-      <button class="nav-item" data-page="editor" onclick="navTo('editor')"><span class="ico">✍️</span><span>Writing</span></button>
       <button class="nav-item" data-page="study" onclick="navTo('study')"><span class="ico">⏱️</span><span>Study Mode</span></button>
       <button class="nav-item" data-page="analytics" onclick="navTo('analytics')"><span class="ico">📊</span><span>Analytics</span></button>
       <button class="nav-item" data-page="sample" onclick="navTo('sample')"><span class="ico">📄</span><span>Bài Mẫu</span></button>
@@ -2952,6 +3156,21 @@ function navTo(page){
 }
 
 // ============ HOME / DASHBOARD ============
+function animateCount(el,target,format){
+  format=format||(v=>v);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||target<=0){
+    el.textContent=format(target);return;
+  }
+  const dur=700,t0=performance.now();
+  function tick(now){
+    const p=Math.min((now-t0)/dur,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=format(Math.round(target*eased));
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 function renderHome(){
   document.getElementById('welcomeName').textContent=currentUser;
   const today=new Date();
@@ -2965,13 +3184,13 @@ function renderHome(){
   const totalSec=my.reduce((a,b)=>a+(b.timeSec||0),0);
   const totalMin=Math.round(totalSec/60);
 
-  document.getElementById('dashStreak').textContent=streak;
-  document.getElementById('dashTotal').textContent=my.length;
+  animateCount(document.getElementById('dashStreak'),streak);
+  animateCount(document.getElementById('dashTotal'),my.length);
   document.getElementById('dashTodayCount').textContent=`${todaySubs.length} hôm nay`;
-  document.getElementById('dashAvg').textContent=avg+'%';
+  animateCount(document.getElementById('dashAvg'),avg,v=>v+'%');
   const lbl=avg>=80?'Xuất sắc 🎉':avg>=60?'Khá tốt 👍':avg>0?'Cần cố gắng':'Bắt đầu nào!';
   document.getElementById('dashAvgLabel').textContent=lbl;
-  document.getElementById('dashTime').textContent=totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin+'m';
+  animateCount(document.getElementById('dashTime'),totalMin,v=>v>=60?Math.floor(v/60)+'h '+(v%60)+'m':v+'m');
 
   // Daily goal
   const goal=3;
@@ -3224,8 +3443,7 @@ function vgOpenTopic(mode,topicKey){
 
   if(!lessons.length){
     el.innerHTML=`<button class="vg-back" onclick="renderVG${mode==='vocab'?'Topics':'GrammarTopics'}('${mode}')">← Quay lại topics</button>
-      <h2 class="vg-section-title">${t.icon} ${t.name}</h2>
-      <div style="text-align:center;padding:40px 20px;color:var(--text-mute);"><p>Chưa có bài ${mode==='vocab'?'từ vựng':'grammar'} nào cho topic này.</p><p style="font-size:0.85rem;margin-top:8px;">Giáo viên cần vào "Quản Lý Bài" → bấm "🤖 Phân tích AI" để tạo.</p></div>`;
+      <h2 class="vg-section-title">${t.icon} ${t.name}</h2>`;
     return;
   }
 
@@ -3823,7 +4041,7 @@ function renderTopics(){
     const t=getTopicMeta(k);
     const isCustom=!TOPICS[k];
     return `<button class="topic-btn ${k===currentTopic?'active':''}" onclick="selectTopicWithPicker('${k}',this)">
-      <span>${t.icon}</span><span>${t.name}</span>${isCustom?'<span style="font-size:0.6rem;opacity:0.7;margin-left:2px;">✎</span>':''}
+      <span>${t.icon}</span><span>${t.name}</span>${isCustom&&currentRole==='teacher'?'<span style="font-size:0.6rem;opacity:0.7;margin-left:2px;">✎</span>':''}
     </button>`;
   }).join('');
   // Add "+ Thêm topic" button (teacher only)
@@ -3852,10 +4070,10 @@ function selectTopicWithPicker(key,btn){
   btn.classList.add('active');
   renderPractices();
 
-  // Show icon picker only for custom topics
+  // Show icon picker only for custom topics, and only for teacher
   const pickerDiv=document.getElementById('topicIconPickerPanel');
   if(!pickerDiv)return;
-  if(TOPICS[key]){pickerDiv.style.display='none';return;}
+  if(TOPICS[key]||currentRole!=='teacher'){pickerDiv.style.display='none';return;}
   // Show icon picker near button
   const rect=btn.getBoundingClientRect();
   const pageRect=document.getElementById('practicePage').getBoundingClientRect();
@@ -3963,10 +4181,15 @@ function renderPractices(){
         <div class="practice-actions">${acts}</div>
       </div>`;
     }).join('');
+    const doneCount=practices.filter(p=>my.some(s=>s.practice===p.id&&s.band===b.key)).length;
+    const donePct=practices.length?Math.round(doneCount/practices.length*100):0;
     return `<div class="level-card ${b.cls}">
       <div class="level-head">
         <div class="level-icon">${b.icon}</div>
-        <div><div class="level-title">${b.key}</div></div>
+        <div class="level-title-wrap">
+          <div class="level-title">${b.key}</div>
+          <div class="level-progress-track"><div class="level-progress-fill" style="width:${donePct}%"></div></div>
+        </div>
         <div class="level-score">${b.score}</div>
       </div>
       <div class="level-desc">${b.desc}</div>
@@ -5664,7 +5887,7 @@ function renderSamplePage(){
       const deleteBtn = isTeacher&&isT?`<button onclick="admRemoveTeacherSample('${s.id}')" style="margin-top:8px;font-size:0.74rem;background:var(--danger-light);color:var(--danger);border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-weight:700;">🗑 Xóa bài mẫu</button>`:'';
       return `
     <div class="sample-card" style="${isT?'border:2px solid var(--teacher);':''}" >
-      <div class="sample-head" style="${isT?'background:linear-gradient(135deg,var(--teacher-dark),var(--teacher),#ec4899);':''}">
+      <div class="sample-head" style="${isT?'background:linear-gradient(135deg,var(--teacher-dark),var(--teacher),#ec4899);':''}" onclick="this.closest('.sample-card').classList.toggle('open')">
         <div class="sample-meta">
           <span class="sample-tag">${s.topicIcon||''} ${s.topic}</span>
           <span class="sample-tag band">${s.band}</span>
@@ -5673,6 +5896,7 @@ function renderSamplePage(){
         </div>
         <div class="sample-title">${s.title}</div>
         <div class="sample-q">"${s.question}"</div>
+        <div class="sample-toggle-hint"><span class="txt-closed">👁 Xem bài mẫu</span><span class="txt-open">Ẩn bài mẫu</span><span class="chevron">▾</span></div>
       </div>
       <div class="sample-body">
         <div class="essay">${s.essay}</div>
@@ -6979,6 +7203,7 @@ async function admBuildHTML(){
 // ============ INIT ============
 async function initApp(){
   selectRole('student');
+  initNavDockEffect();
   // initMusic() - Tắt auto-init, nhạc sẽ load khi user click nút
   // Sync from cloud (background, non-blocking for UI)
   try{
