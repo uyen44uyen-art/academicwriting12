@@ -3028,7 +3028,6 @@ function buildNavMenu(){
     menu.innerHTML=`
       <button class="nav-item active" data-page="home" onclick="navTo('home')"><span class="ico">🏠</span><span>Home</span></button>
       <button class="nav-item" data-page="practice" onclick="navTo('practice')"><span class="ico">✏️</span><span>Practice</span></button>
-      <button class="nav-item" data-page="editor" onclick="navTo('editor')"><span class="ico">✍️</span><span>Writing</span></button>
       <button class="nav-item" data-page="study" onclick="navTo('study')"><span class="ico">⏱️</span><span>Study Mode</span></button>
       <button class="nav-item" data-page="analytics" onclick="navTo('analytics')"><span class="ico">📊</span><span>Analytics</span></button>
       <button class="nav-item" data-page="sample" onclick="navTo('sample')"><span class="ico">📄</span><span>Bài Mẫu</span></button>
