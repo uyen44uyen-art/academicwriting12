@@ -2934,6 +2934,32 @@ try{submissions=JSON.parse(localStorage.getItem('aw_submissions'))||[];}catch(e)
 let studyDays={};
 try{studyDays=JSON.parse(localStorage.getItem('aw_study_days'))||{};}catch(e){studyDays={};}
 
+// ============ STUDENT REGISTRATION ============
+// Tracks which student names have "registered" so Đăng Ký / Đăng Nhập behave
+// differently. Backfilled from existing submission history so students who
+// were already using the app before this feature existed aren't locked out.
+function getRegisteredStudents(){
+  let list;
+  try{list=JSON.parse(localStorage.getItem('aw_registered_students'));}catch(e){list=null;}
+  if(!Array.isArray(list)){
+    const fromHistory=new Set(submissions.map(s=>s.student).filter(Boolean));
+    list=[...fromHistory];
+    localStorage.setItem('aw_registered_students',JSON.stringify(list));
+  }
+  return list;
+}
+function setRegisteredStudents(arr){localStorage.setItem('aw_registered_students',JSON.stringify(arr));}
+function isStudentRegistered(name){
+  return getRegisteredStudents().some(n=>n.toLowerCase()===name.toLowerCase());
+}
+function registerStudent(name){
+  const list=getRegisteredStudents();
+  if(!isStudentRegistered(name)){
+    list.push(name);
+    setRegisteredStudents(list);
+  }
+}
+
 // Today's date string
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function dateStr(d){return new Date(d).toISOString().split('T')[0];}
@@ -3059,6 +3085,18 @@ function login(){
   if(currentRole==='student'){
     const name=document.getElementById('username').value.trim();
     if(!name){showLoginError('Vui lòng nhập tên của bạn!');return;}
+    if(authMode==='register'){
+      if(isStudentRegistered(name)){
+        showLoginError('Tên này đã được đăng ký. Vui lòng chuyển sang tab "Đăng nhập".');
+        return;
+      }
+      registerStudent(name);
+    } else {
+      if(!isStudentRegistered(name)){
+        showLoginError('Tên này chưa đăng ký. Vui lòng chuyển sang tab "Đăng ký" để tạo tên mới.');
+        return;
+      }
+    }
     currentUser=name;
   } else {
     if(document.getElementById('password').value!=='power123'){showLoginError('Mật khẩu không đúng!');return;}
