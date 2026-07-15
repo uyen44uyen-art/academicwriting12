@@ -120,9 +120,70 @@ input,select,textarea{font-family:inherit;}
 @keyframes ripple{from{transform:scale(0);opacity:1;}to{transform:scale(2.5);opacity:0;}}
 @keyframes confettiFall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
 @keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(0.985);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes btnSheen{to{transform:translateX(220%) skewX(-18deg);}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
 
 .fade-in{animation:fadeIn 0.4s ease;}
 .fade-in-up{animation:fadeInUp 0.5s ease both;}
+
+/* ========== MOTION SYSTEM ========== */
+:root{
+  --ease-out:cubic-bezier(0.22,1,0.36,1);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --dur-fast:0.18s; --dur-med:0.3s; --dur-slow:0.45s;
+}
+
+/* Staggered entrance: re-runs each time a page becomes visible */
+.dashboard-grid>.dash-card,.stat-grid>.stat-card,.levels-grid>.level-card,
+.content-grid>*,.topic-selector>.topic-btn{
+  animation:cardIn var(--dur-slow) var(--ease-out) both;
+}
+.dashboard-grid>*:nth-child(1),.stat-grid>*:nth-child(1),.levels-grid>*:nth-child(1),.content-grid>*:nth-child(1){animation-delay:0.03s;}
+.dashboard-grid>*:nth-child(2),.stat-grid>*:nth-child(2),.levels-grid>*:nth-child(2),.content-grid>*:nth-child(2){animation-delay:0.09s;}
+.dashboard-grid>*:nth-child(3),.stat-grid>*:nth-child(3),.levels-grid>*:nth-child(3),.content-grid>*:nth-child(3){animation-delay:0.15s;}
+.dashboard-grid>*:nth-child(4),.stat-grid>*:nth-child(4),.levels-grid>*:nth-child(4),.content-grid>*:nth-child(4){animation-delay:0.21s;}
+.dashboard-grid>*:nth-child(n+5),.stat-grid>*:nth-child(n+5),.levels-grid>*:nth-child(n+5),.content-grid>*:nth-child(n+5){animation-delay:0.27s;}
+.topic-selector>.topic-btn:nth-child(n){animation-delay:0s;}
+.topic-selector>.topic-btn:nth-child(1){animation-delay:0.02s;}
+.topic-selector>.topic-btn:nth-child(2){animation-delay:0.05s;}
+.topic-selector>.topic-btn:nth-child(3){animation-delay:0.08s;}
+.topic-selector>.topic-btn:nth-child(4){animation-delay:0.11s;}
+.topic-selector>.topic-btn:nth-child(5){animation-delay:0.14s;}
+.topic-selector>.topic-btn:nth-child(6){animation-delay:0.17s;}
+.topic-selector>.topic-btn:nth-child(7){animation-delay:0.20s;}
+.topic-selector>.topic-btn:nth-child(8){animation-delay:0.23s;}
+.practice-list>.practice-item{animation:cardIn 0.4s var(--ease-out) both;}
+.practice-list>.practice-item:nth-child(1){animation-delay:0.05s;}
+.practice-list>.practice-item:nth-child(2){animation-delay:0.10s;}
+.practice-list>.practice-item:nth-child(3){animation-delay:0.15s;}
+.practice-list>.practice-item:nth-child(4){animation-delay:0.20s;}
+.practice-list>.practice-item:nth-child(5){animation-delay:0.25s;}
+.practice-list>.practice-item:nth-child(6){animation-delay:0.30s;}
+
+/* Press feedback: subtle scale on tap/click */
+.btn:active,.btn-login:active,.topic-btn:active,.role-tab:active,.nav-item:active,
+.pomo-btn:active,.practice-actions button:active,.auth-tab:active{transform:scale(0.965);}
+
+/* Primary CTA sheen sweep on hover */
+.btn-primary,.btn-login{position:relative;overflow:hidden;}
+.btn-primary::after,.btn-login::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.32),transparent);transform:translateX(-140%) skewX(-18deg);pointer-events:none;}
+.btn-primary:hover::after,.btn-login:hover::after{animation:btnSheen 0.7s var(--ease-out);}
+
+/* Micro-interactions */
+.sidebar-logo-icon{transition:transform var(--dur-med) var(--ease-spring);}
+.sidebar-logo:hover .sidebar-logo-icon{transform:rotate(-8deg) scale(1.08);}
+.level-icon{transition:transform var(--dur-med) var(--ease-spring);}
+.level-card:hover .level-icon{transform:scale(1.12) rotate(3deg);}
+.dash-card-bg{transition:transform var(--dur-med) var(--ease-out),opacity var(--dur-med) ease;}
+.dash-card:hover .dash-card-bg{transform:scale(1.15) rotate(-6deg);opacity:0.9;}
+.user-ava{transition:transform var(--dur-med) var(--ease-spring);}
+.user-card:hover .user-ava{transform:scale(1.1);}
+
+/* Reduced motion: honor user preference */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+}
 
 /* ========== LOGIN PAGE ========== */
 :root{
@@ -297,7 +358,9 @@ input,select,textarea{font-family:inherit;}
   align-items:center;
   gap:28px;
   box-shadow:var(--shadow-xl);
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 45%,#f093fb 100%);
+  background-size:180% 180%;
+  animation:gradientShift 9s ease infinite;
 }
 .topic-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,0.18),transparent 70%);border-radius:50%;}
 .topic-hero::after{content:'';position:absolute;bottom:-100px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(255,255,255,0.1),transparent 70%);border-radius:50%;}
@@ -469,6 +532,7 @@ input,select,textarea{font-family:inherit;}
 
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:28px;}
 .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:all 0.3s ease;}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));}
 .stat-card.success::before{background:linear-gradient(90deg,var(--success),#34d399);}
@@ -3092,6 +3156,21 @@ function navTo(page){
 }
 
 // ============ HOME / DASHBOARD ============
+function animateCount(el,target,format){
+  format=format||(v=>v);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||target<=0){
+    el.textContent=format(target);return;
+  }
+  const dur=700,t0=performance.now();
+  function tick(now){
+    const p=Math.min((now-t0)/dur,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=format(Math.round(target*eased));
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
 function renderHome(){
   document.getElementById('welcomeName').textContent=currentUser;
   const today=new Date();
@@ -3105,13 +3184,13 @@ function renderHome(){
   const totalSec=my.reduce((a,b)=>a+(b.timeSec||0),0);
   const totalMin=Math.round(totalSec/60);
 
-  document.getElementById('dashStreak').textContent=streak;
-  document.getElementById('dashTotal').textContent=my.length;
+  animateCount(document.getElementById('dashStreak'),streak);
+  animateCount(document.getElementById('dashTotal'),my.length);
   document.getElementById('dashTodayCount').textContent=`${todaySubs.length} hôm nay`;
-  document.getElementById('dashAvg').textContent=avg+'%';
+  animateCount(document.getElementById('dashAvg'),avg,v=>v+'%');
   const lbl=avg>=80?'Xuất sắc 🎉':avg>=60?'Khá tốt 👍':avg>0?'Cần cố gắng':'Bắt đầu nào!';
   document.getElementById('dashAvgLabel').textContent=lbl;
-  document.getElementById('dashTime').textContent=totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin+'m';
+  animateCount(document.getElementById('dashTime'),totalMin,v=>v>=60?Math.floor(v/60)+'h '+(v%60)+'m':v+'m');
 
   // Daily goal
   const goal=3;
