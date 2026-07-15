@@ -3443,8 +3443,7 @@ function vgOpenTopic(mode,topicKey){
 
   if(!lessons.length){
     el.innerHTML=`<button class="vg-back" onclick="renderVG${mode==='vocab'?'Topics':'GrammarTopics'}('${mode}')">← Quay lại topics</button>
-      <h2 class="vg-section-title">${t.icon} ${t.name}</h2>
-      <div style="text-align:center;padding:40px 20px;color:var(--text-mute);"><p>Chưa có bài ${mode==='vocab'?'từ vựng':'grammar'} nào cho topic này.</p><p style="font-size:0.85rem;margin-top:8px;">Giáo viên cần vào "Quản Lý Bài" → bấm "🤖 Phân tích AI" để tạo.</p></div>`;
+      <h2 class="vg-section-title">${t.icon} ${t.name}</h2>`;
     return;
   }
 
