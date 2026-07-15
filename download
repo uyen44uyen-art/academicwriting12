@@ -790,7 +790,7 @@ input,select,textarea{font-family:inherit;}
 .autosave-status .dot{width:8px;height:8px;background:var(--success);border-radius:50%;}
 
 /* ========== FLASHCARDS / SAMPLE / GRAMMAR / VOCAB ========== */
-.content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+.content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start;}
 .sample-card{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.3s ease;}
 .sample-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
 .sample-head{padding:22px 26px;color:white;background:linear-gradient(135deg,#667eea,#764ba2);position:relative;overflow:hidden;cursor:pointer;}
