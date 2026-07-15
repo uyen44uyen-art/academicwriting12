@@ -2939,6 +2939,18 @@ async function cloudDeleteExercise(topicKey,band,practiceId){
   return true;
 }
 
+// Deletes every exercise/vocab/grammar row for a topic, regardless of band or
+// practice — a per-entry loop can miss rows the current device never synced
+// locally, which is why a "deleted" topic would resurrect after cloudSyncOnLoad
+// re-fetched those leftover rows on the next visit.
+async function cloudDeleteTopicEverywhere(topicKey){
+  const enc=encodeURIComponent(topicKey);
+  const tables=['exercise_bank','vocab_lessons','grammar_lessons'];
+  await Promise.all(tables.map(table=>
+    fetch(SUPABASE_URL+`/rest/v1/${table}?topic_key=eq.${enc}`,{method:'DELETE',headers:SUPABASE_HEADERS})
+  ));
+}
+
 // On app start, sync cloud → localStorage cache
 async function cloudSyncOnLoad(){
   const bank=await cloudFetchAll();
@@ -6437,14 +6449,13 @@ async function admDeleteTopic(){
 
   toast(`🗑️ Đang xóa topic "${t.icon} ${t.name}"...`,'info',2000);
   try{
-    // Delete all custom entries on cloud
-    const deletions=[];
-    Object.keys(topicEntries).forEach(band=>{
-      topicEntries[band].forEach(entry=>{
-        deletions.push(cloudDeleteExercise(currentKey,band,entry.practiceId));
-      });
-    });
-    await Promise.all(deletions);
+    // Delete every exercise/vocab/grammar row for this topic on the cloud,
+    // regardless of band/practiceId — not just the ones this device happens
+    // to have cached locally (otherwise leftover rows resurrect the topic on
+    // the next cloudSyncOnLoad).
+    await cloudDeleteTopicEverywhere(currentKey);
+    vocabCache=vocabCache.filter(c=>c.topic_key!==currentKey);
+    grammarCache=grammarCache.filter(c=>c.topic_key!==currentKey);
 
     // Delete from local bank
     delete bank[currentKey];
