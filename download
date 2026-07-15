@@ -793,14 +793,21 @@ input,select,textarea{font-family:inherit;}
 .content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
 .sample-card{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);transition:all 0.3s ease;}
 .sample-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-.sample-head{padding:22px 26px;color:white;background:linear-gradient(135deg,#667eea,#764ba2);position:relative;overflow:hidden;}
+.sample-head{padding:22px 26px;color:white;background:linear-gradient(135deg,#667eea,#764ba2);position:relative;overflow:hidden;cursor:pointer;}
 .sample-head::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.1);border-radius:50%;}
 .sample-meta{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;position:relative;}
 .sample-tag{background:rgba(255,255,255,0.22);padding:3px 11px;border-radius:50px;font-size:0.74rem;font-weight:700;backdrop-filter:blur(8px);}
 .sample-tag.band{background:rgba(16,185,129,0.4);}
 .sample-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:6px;position:relative;letter-spacing:-0.3px;}
 .sample-q{font-size:0.85rem;opacity:0.92;font-style:italic;position:relative;line-height:1.5;}
-.sample-body{padding:24px 26px;}
+.sample-toggle-hint{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:0.8rem;font-weight:700;opacity:0.9;position:relative;}
+.sample-toggle-hint .chevron{transition:transform 0.25s ease;font-size:0.7rem;}
+.sample-card.open .sample-toggle-hint .chevron{transform:rotate(180deg);}
+.sample-card.open .sample-toggle-hint .txt-closed{display:none;}
+.sample-toggle-hint .txt-open{display:none;}
+.sample-card.open .sample-toggle-hint .txt-open{display:inline;}
+.sample-body{padding:24px 26px;display:none;}
+.sample-card.open .sample-body{display:block;animation:fadeIn 0.25s ease;}
 .sample-body .essay{font-size:0.92rem;line-height:1.85;color:var(--text);white-space:pre-line;}
 .sample-score{margin-top:18px;padding:12px 16px;background:var(--success-light);border-left:4px solid var(--success);border-radius:8px;font-size:0.86rem;color:var(--success);font-weight:700;}
 
@@ -5784,7 +5791,7 @@ function renderSamplePage(){
       const deleteBtn = isTeacher&&isT?`<button onclick="admRemoveTeacherSample('${s.id}')" style="margin-top:8px;font-size:0.74rem;background:var(--danger-light);color:var(--danger);border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-weight:700;">🗑 Xóa bài mẫu</button>`:'';
       return `
     <div class="sample-card" style="${isT?'border:2px solid var(--teacher);':''}" >
-      <div class="sample-head" style="${isT?'background:linear-gradient(135deg,var(--teacher-dark),var(--teacher),#ec4899);':''}">
+      <div class="sample-head" style="${isT?'background:linear-gradient(135deg,var(--teacher-dark),var(--teacher),#ec4899);':''}" onclick="this.closest('.sample-card').classList.toggle('open')">
         <div class="sample-meta">
           <span class="sample-tag">${s.topicIcon||''} ${s.topic}</span>
           <span class="sample-tag band">${s.band}</span>
@@ -5793,6 +5800,7 @@ function renderSamplePage(){
         </div>
         <div class="sample-title">${s.title}</div>
         <div class="sample-q">"${s.question}"</div>
+        <div class="sample-toggle-hint"><span class="txt-closed">👁 Xem bài mẫu</span><span class="txt-open">Ẩn bài mẫu</span><span class="chevron">▾</span></div>
       </div>
       <div class="sample-body">
         <div class="essay">${s.essay}</div>
