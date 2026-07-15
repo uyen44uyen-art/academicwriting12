@@ -312,31 +312,39 @@ input,select,textarea{font-family:inherit;}
 
 /* ========== LEVEL CARDS ========== */
 .levels-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
-.level-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:var(--shadow-md);transition:all 0.3s ease;position:relative;overflow:hidden;}
-.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));opacity:0;transition:opacity 0.3s ease;}
+.level-card{background:var(--bg-card);border:1px solid var(--border);border-radius:22px;padding:28px;box-shadow:var(--shadow-md);transition:all 0.3s ease;position:relative;overflow:hidden;}
+.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--primary),var(--accent));}
+.level-card.b7::before{background:linear-gradient(90deg,var(--warning),#f97316);}
+.level-card.b8::before{background:linear-gradient(90deg,#a855f7,var(--primary));}
 .level-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--primary-light);}
-.level-card:hover::before{opacity:1;}
-.level-head{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-.level-icon{width:42px;height:42px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
-.level-card.b7 .level-icon{background:var(--warning-light);color:var(--warning);}
-.level-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-0.3px;}
-.level-score{margin-left:auto;background:var(--success-light);color:var(--success);padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:800;}
+.level-head{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.level-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;box-shadow:0 8px 18px var(--primary-glow);flex-shrink:0;}
+.level-card.b7 .level-icon{background:linear-gradient(135deg,var(--warning),#f97316);box-shadow:0 8px 18px rgba(245,158,11,0.35);}
+.level-card.b8 .level-icon{background:linear-gradient(135deg,#a855f7,var(--primary));box-shadow:0 8px 18px rgba(168,85,247,0.35);}
+.level-title-wrap{flex:1;min-width:0;}
+.level-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.3px;}
+.level-progress-track{height:5px;border-radius:3px;background:var(--bg-soft);margin-top:7px;overflow:hidden;}
+.level-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 0.4s ease;}
+.level-card.b7 .level-progress-fill{background:linear-gradient(90deg,var(--warning),#f97316);}
+.level-card.b8 .level-progress-fill{background:linear-gradient(90deg,#a855f7,var(--primary));}
+.level-score{background:var(--success-light);color:var(--success);padding:5px 13px;border-radius:50px;font-size:0.72rem;font-weight:800;flex-shrink:0;}
 .level-card.b7 .level-score{background:var(--warning-light);color:var(--warning);}
-.level-desc{color:var(--text-soft);font-size:0.88rem;line-height:1.55;margin-bottom:18px;}
-.practice-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.practice-item{padding:13px 14px;background:var(--bg-soft);border-radius:12px;border-left:4px solid var(--primary);display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all 0.2s ease;cursor:pointer;}
-.practice-item:hover{background:var(--primary-light);transform:translateX(4px);}
-.practice-num{width:32px;height:32px;border-radius:9px;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0;}
+.level-desc{color:var(--text-soft);font-size:0.87rem;line-height:1.55;margin-bottom:20px;}
+.practice-list{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.practice-item{padding:12px 14px;background:var(--bg-soft);border-radius:14px;border:1px solid transparent;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:all 0.2s ease;cursor:pointer;}
+.practice-item:hover{background:var(--bg-elev);border-color:var(--primary-light);box-shadow:var(--shadow-sm);transform:translateY(-1px);}
+.practice-num{width:30px;height:30px;border-radius:9px;background:var(--bg-elev);color:var(--text-soft);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;flex-shrink:0;transition:all 0.2s ease;}
+.practice-item:hover .practice-num{background:var(--primary);color:#fff;border-color:transparent;}
 .practice-info{flex:1;min-width:0;}
-.practice-title-row{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.practice-desc-row{font-size:0.75rem;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.practice-status{display:flex;align-items:center;gap:8px;}
-.practice-pct{font-size:1.1rem;font-weight:800;}
-.practice-badge{font-size:0.65rem;background:var(--bg-elev);color:var(--text-soft);padding:2px 7px;border-radius:6px;font-weight:700;border:1px solid var(--border);}
-.practice-actions{display:flex;flex-direction:column;gap:5px;}
-.practice-actions button{padding:5px 11px;border-radius:7px;font-size:0.73rem;font-weight:700;transition:all 0.2s ease;white-space:nowrap;}
-.practice-actions .replay{background:var(--primary);color:white;}
-.practice-actions .replay:hover{background:var(--primary-dark);}
+.practice-title-row{font-size:0.87rem;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.practice-desc-row{font-size:0.74rem;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.practice-status{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.practice-pct{font-size:1.05rem;font-weight:800;}
+.practice-badge{font-size:0.64rem;background:var(--bg-elev);color:var(--text-soft);padding:3px 8px;border-radius:6px;font-weight:700;border:1px solid var(--border);}
+.practice-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.practice-actions button{padding:6px 12px;border-radius:8px;font-size:0.72rem;font-weight:700;transition:all 0.2s ease;white-space:nowrap;}
+.practice-actions .replay{background:var(--primary);color:white;box-shadow:0 4px 10px var(--primary-glow);}
+.practice-actions .replay:hover{background:var(--primary-dark);transform:translateY(-1px);}
 .practice-actions .review{background:transparent;color:var(--primary);border:1.5px solid var(--primary);}
 .practice-actions .review:hover{background:var(--primary);color:white;}
 /* ========== BUTTONS ========== */
@@ -4071,10 +4079,15 @@ function renderPractices(){
         <div class="practice-actions">${acts}</div>
       </div>`;
     }).join('');
+    const doneCount=practices.filter(p=>my.some(s=>s.practice===p.id&&s.band===b.key)).length;
+    const donePct=practices.length?Math.round(doneCount/practices.length*100):0;
     return `<div class="level-card ${b.cls}">
       <div class="level-head">
         <div class="level-icon">${b.icon}</div>
-        <div><div class="level-title">${b.key}</div></div>
+        <div class="level-title-wrap">
+          <div class="level-title">${b.key}</div>
+          <div class="level-progress-track"><div class="level-progress-fill" style="width:${donePct}%"></div></div>
+        </div>
         <div class="level-score">${b.score}</div>
       </div>
       <div class="level-desc">${b.desc}</div>
