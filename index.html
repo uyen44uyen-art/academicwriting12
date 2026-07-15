@@ -1811,6 +1811,13 @@ input,select,textarea{font-family:inherit;}
           <input id="username" class="login-input" type="text" placeholder="Nhập tên..." onkeypress="if(event.key==='Enter')login()" autocomplete="off">
         </div>
       </div>
+      <div class="input-block" id="studentPasswordGroup">
+        <label id="studentPasswordLabel">Mật khẩu</label>
+        <div class="input-wrap">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <input id="studentPassword" class="login-input" type="password" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')login()" autocomplete="off">
+        </div>
+      </div>
       <div class="input-block" id="passwordGroup" style="display:none;">
         <label>Mật khẩu Giáo Viên</label>
         <div class="input-wrap">
@@ -2972,6 +2979,23 @@ function registerStudent(name){
   }
 }
 
+// Passwords keyed by lowercase name. Students backfilled from old submission
+// history (or who registered before this feature existed) have no entry here
+// yet — their first successful login "claims" whatever password they type.
+function getStudentPasswords(){
+  let map;
+  try{map=JSON.parse(localStorage.getItem('aw_student_passwords'));}catch(e){map=null;}
+  if(!map||typeof map!=='object')map={};
+  return map;
+}
+function setStudentPasswords(map){localStorage.setItem('aw_student_passwords',JSON.stringify(map));}
+function getStudentPassword(name){return getStudentPasswords()[name.toLowerCase()];}
+function setStudentPassword(name,password){
+  const map=getStudentPasswords();
+  map[name.toLowerCase()]=password;
+  setStudentPasswords(map);
+}
+
 // Today's date string
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function dateStr(d){return new Date(d).toISOString().split('T')[0];}
@@ -3050,6 +3074,7 @@ function selectRole(role){
   document.getElementById('roleStudent').classList.toggle('on',role==='student');
   document.getElementById('roleTeacher').classList.toggle('on',role==='teacher');
   document.getElementById('usernameGroup').style.display=role==='student'?'block':'none';
+  document.getElementById('studentPasswordGroup').style.display=role==='student'?'block':'none';
   document.getElementById('passwordGroup').style.display=role==='teacher'?'block':'none';
   document.getElementById('loginError').classList.remove('show');
   updateAuthUI();
@@ -3071,9 +3096,11 @@ function updateAuthUI(){
   const foot=document.getElementById('authSwitchFoot');
   if(authMode==='register'){
     heading.textContent='Tạo Tài Khoản Mới';
-    sub.textContent='Nhập tên để bắt đầu hành trình luyện Writing của bạn.';
+    sub.textContent='Nhập tên và đặt mật khẩu để bắt đầu hành trình luyện Writing của bạn.';
     document.getElementById('loginBtnTxt').innerHTML='Tạo Tài Khoản & Bắt Đầu';
     foot.innerHTML='Đã có tài khoản? <a onclick="switchAuthMode(\'login\')">Đăng nhập</a>';
+    document.getElementById('studentPasswordLabel').textContent='Đặt mật khẩu';
+    document.getElementById('studentPassword').placeholder='Tạo mật khẩu...';
   } else if(currentRole==='teacher'){
     heading.textContent='Đăng Nhập Giáo Viên';
     sub.textContent='Nhập mật khẩu để quản lý lớp học.';
@@ -3084,6 +3111,8 @@ function updateAuthUI(){
     sub.textContent='Đăng nhập để tiếp tục hành trình nâng band Writing.';
     document.getElementById('loginBtnTxt').innerHTML='Vào Học Ngay';
     foot.innerHTML='Chưa có tài khoản? <a onclick="switchAuthMode(\'register\')">Đăng ký ngay</a>';
+    document.getElementById('studentPasswordLabel').textContent='Mật khẩu';
+    document.getElementById('studentPassword').placeholder='Nhập mật khẩu...';
   }
 }
 
@@ -3096,17 +3125,29 @@ function showLoginError(msg){
 function login(){
   if(currentRole==='student'){
     const name=document.getElementById('username').value.trim();
+    const pass=document.getElementById('studentPassword').value;
     if(!name){showLoginError('Vui lòng nhập tên của bạn!');return;}
     if(authMode==='register'){
       if(isStudentRegistered(name)){
         showLoginError('Tên này đã được đăng ký. Vui lòng chuyển sang tab "Đăng nhập".');
         return;
       }
+      if(!pass){showLoginError('Vui lòng đặt mật khẩu để bảo vệ tài khoản của bạn!');return;}
       registerStudent(name);
+      setStudentPassword(name,pass);
     } else {
       if(!isStudentRegistered(name)){
         showLoginError('Tên này chưa đăng ký. Vui lòng chuyển sang tab "Đăng ký" để tạo tên mới.');
         return;
+      }
+      const savedPass=getStudentPassword(name);
+      if(savedPass){
+        if(pass!==savedPass){showLoginError('Mật khẩu không đúng!');return;}
+      } else {
+        // Legacy account with no password on file yet: claim it with whatever is typed.
+        if(!pass){showLoginError('Tài khoản này chưa có mật khẩu. Vui lòng đặt mật khẩu để bảo vệ tài khoản!');return;}
+        setStudentPassword(name,pass);
+        toast('🔒 Đã đặt mật khẩu cho tài khoản của bạn.','success');
       }
     }
     currentUser=name;
@@ -3130,6 +3171,7 @@ function logout(){
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('app').style.display='none';
   document.getElementById('username').value='';
+  document.getElementById('studentPassword').value='';
   document.getElementById('password').value='';
   currentUser='';selectedStudent=null;
   if(edTimerInterval){clearInterval(edTimerInterval);edTimerInterval=null;edTimerRunning=false;}
