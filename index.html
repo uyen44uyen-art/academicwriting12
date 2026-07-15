@@ -1186,12 +1186,32 @@ input,select,textarea{font-family:inherit;}
 .quiz-actions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;}
 
 .quiz-summary{
-  text-align:center;padding:40px 20px;
-  background:linear-gradient(135deg,var(--primary-light),var(--success-light));
-  border-radius:18px;border:1.5px solid var(--primary);
+  text-align:center;padding:40px 24px 32px;border-radius:22px;
+  position:relative;overflow:hidden;animation:cardIn 0.5s ease both;
 }
-.quiz-summary-score{font-size:3rem;font-weight:800;color:var(--primary);margin:14px 0;}
-.quiz-summary-msg{font-size:1.1rem;color:var(--text);margin-bottom:18px;}
+.quiz-summary::before{content:'';position:absolute;top:-70px;right:-50px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.4),transparent 70%);pointer-events:none;}
+[data-theme="dark"] .quiz-summary::before{background:radial-gradient(circle,rgba(255,255,255,0.08),transparent 70%);}
+.quiz-summary.tier-great{background:linear-gradient(135deg,var(--success-light),var(--primary-light));border:1.5px solid var(--success);}
+.quiz-summary.tier-good{background:linear-gradient(135deg,var(--primary-light),var(--success-light));border:1.5px solid var(--primary);}
+.quiz-summary.tier-meh{background:linear-gradient(135deg,var(--warning-light),var(--bg-soft));border:1.5px solid var(--warning);}
+.quiz-summary-emoji{font-size:3.2rem;display:inline-block;animation:bounceIn 0.6s ease;margin-bottom:2px;position:relative;z-index:1;}
+.quiz-summary-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-0.3px;margin-bottom:2px;position:relative;z-index:1;}
+.quiz-summary-msg{font-size:0.96rem;color:var(--text-soft);margin-bottom:10px;position:relative;z-index:1;}
+.quiz-summary-ring{position:relative;width:130px;height:130px;margin:12px auto 18px;z-index:1;}
+.quiz-summary-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
+.quiz-summary-ring .bg{stroke:rgba(120,120,140,0.18);stroke-width:10;fill:none;}
+.quiz-summary-ring .fg{stroke-width:10;fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1);}
+.quiz-summary-ring.tier-great .fg{stroke:var(--success);}
+.quiz-summary-ring.tier-good .fg{stroke:var(--primary);}
+.quiz-summary-ring.tier-meh .fg{stroke:var(--warning);}
+.quiz-summary-ring-txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.quiz-summary-ring-txt .n{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);line-height:1;}
+.quiz-summary-ring-txt .p{font-size:0.68rem;color:var(--text-mute);font-weight:700;margin-top:3px;}
+.quiz-summary-stats{display:flex;justify-content:center;gap:26px;margin-bottom:22px;position:relative;z-index:1;}
+.quiz-summary-stat .v{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:800;line-height:1;}
+.quiz-summary-stat.ok .v{color:var(--success);}
+.quiz-summary-stat.no .v{color:var(--danger);}
+.quiz-summary-stat .l{font-size:0.68rem;color:var(--text-mute);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-top:5px;}
 
 /* ========== VOCAB LEARN (15-câu) ========== */
 .vlearn-wrap{max-width:720px;margin:0 auto;}
@@ -3819,17 +3839,38 @@ function renderQuizQuestion(){
   if(quizState.idx>=quizState.questions.length){
     // Quiz complete
     const total=quizState.questions.length;
+    const wrong=total-quizState.score;
     const pct=Math.round(quizState.score*100/total);
-    const msg=pct>=80?'🏆 Xuất sắc!':pct>=60?'👍 Khá tốt!':'💪 Cố gắng thêm nhé!';
-    el.innerHTML=`<div class="quiz-summary">
-      <div style="font-size:3rem;">${pct>=80?'🎉':pct>=60?'👏':'📖'}</div>
-      <div class="quiz-summary-score">${quizState.score}/${total}</div>
-      <div class="quiz-summary-msg">${msg} (${pct}%)</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    const tier=pct>=80?'great':pct>=60?'good':'meh';
+    const emoji=pct>=80?'🎉':pct>=60?'👏':'📖';
+    const title=pct>=80?'Xuất Sắc!':pct>=60?'Khá Tốt!':'Cố Gắng Thêm Nhé!';
+    const msg=pct>=80?'Bạn nhớ từ vựng rất tốt — tiếp tục phát huy!':pct>=60?'Đang trên đà tiến bộ, luyện thêm để nhớ hết nhé!':'Đừng nản, làm lại vài lần là nhớ hết thôi!';
+    const CIRC=364.4;
+    el.innerHTML=`<div class="quiz-summary ${tier==='great'?'tier-great':tier==='good'?'tier-good':'tier-meh'}">
+      <div class="quiz-summary-emoji">${emoji}</div>
+      <div class="quiz-summary-title">${title}</div>
+      <div class="quiz-summary-msg">${msg}</div>
+      <div class="quiz-summary-ring tier-${tier}">
+        <svg viewBox="0 0 140 140">
+          <circle class="bg" cx="70" cy="70" r="58"/>
+          <circle class="fg" id="quizSummaryRing" cx="70" cy="70" r="58" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}"/>
+        </svg>
+        <div class="quiz-summary-ring-txt"><div class="n">${pct}%</div><div class="p">${quizState.score}/${total} câu</div></div>
+      </div>
+      <div class="quiz-summary-stats">
+        <div class="quiz-summary-stat ok"><div class="v">✓ ${quizState.score}</div><div class="l">Đúng</div></div>
+        <div class="quiz-summary-stat no"><div class="v">✗ ${wrong}</div><div class="l">Sai</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;">
         <button class="flashcard-btn good" onclick="startVocabQuiz('${quizState.lessonRef.topicKey}','${quizState.lessonRef.band.replace(/'/g,"\\\\'")}',${quizState.lessonRef.practiceId})">🔄 Làm lại</button>
         <button class="flashcard-btn easy" onclick="exitQuiz()">← Quay lại bài</button>
       </div>
     </div>`;
+    setTimeout(()=>{
+      const ring=document.getElementById('quizSummaryRing');
+      if(ring)ring.style.strokeDashoffset=CIRC*(1-pct/100);
+    },80);
+    if(pct>=80)setTimeout(()=>confetti&&confetti(),300);
     return;
   }
 
