@@ -2788,6 +2788,18 @@ async function cloudSaveGrammarLesson(topicKey,band,practiceId,title,items){
   return await r.json();
 }
 
+async function cloudDeleteVocabLesson(topicKey,band,practiceId){
+  const url=SUPABASE_URL+`/rest/v1/vocab_lessons?topic_key=eq.${encodeURIComponent(topicKey)}&band=eq.${encodeURIComponent(band)}&practice_id=eq.${practiceId}`;
+  const r=await fetch(url,{method:'DELETE',headers:SUPABASE_HEADERS});
+  if(!r.ok)throw new Error('Xóa vocab lesson thất bại: '+await r.text());
+}
+
+async function cloudDeleteGrammarLesson(topicKey,band,practiceId){
+  const url=SUPABASE_URL+`/rest/v1/grammar_lessons?topic_key=eq.${encodeURIComponent(topicKey)}&band=eq.${encodeURIComponent(band)}&practice_id=eq.${practiceId}`;
+  const r=await fetch(url,{method:'DELETE',headers:SUPABASE_HEADERS});
+  if(!r.ok)throw new Error('Xóa grammar lesson thất bại: '+await r.text());
+}
+
 async function cloudFetchAllVocab(){
   try{
     const r=await fetch(SUPABASE_URL+'/rest/v1/vocab_lessons?select=*&order=updated_at.desc',{headers:SUPABASE_HEADERS});
@@ -3530,6 +3542,7 @@ function vgOpenLesson(mode,topicKey,band,practiceId){
           <button class="vg-action-btn primary" onclick="startFlashcards('${topicKey}','${band.replace(/'/g,"\\'")}',${practiceId})">🃏 Flashcards</button>
           <button class="vg-action-btn" onclick="startVocabQuiz('${topicKey}','${band.replace(/'/g,"\\'")}',${practiceId})">🎯 Quiz</button>
           <button class="vg-action-btn" onclick="startVocabLearn('${topicKey}','${band.replace(/'/g,"\\'")}',${practiceId})" style="background:linear-gradient(135deg,rgba(245,158,11,0.8),rgba(236,72,153,0.8));border-color:rgba(255,255,255,0.4);">🧠 Học 15 câu</button>
+          ${currentRole==='teacher'?`<button class="vg-action-btn" onclick="vgDeleteLesson('vocab','${topicKey}','${band.replace(/'/g,"\\'")}',${practiceId})" style="background:var(--danger-light);color:var(--danger);border-color:var(--danger);">🗑 Xóa bài</button>`:''}
         </div>
       </div>
       <div class="vg-word-list">
@@ -3559,6 +3572,7 @@ function vgOpenLesson(mode,topicKey,band,practiceId){
           <h2>${t.icon} ${lesson.title||'Bài '+practiceId}</h2>
           <div class="meta">${t.name} · ${band} · Bài ${practiceId} · ${items.length} cấu trúc</div>
         </div>
+        ${currentRole==='teacher'?`<div class="vg-detail-actions"><button class="vg-action-btn" onclick="vgDeleteLesson('grammar','${topicKey}','${band.replace(/'/g,"\\'")}',${practiceId})" style="background:var(--danger-light);color:var(--danger);border-color:var(--danger);">🗑 Xóa bài</button></div>`:''}
       </div>
       <div class="vg-grammar-list">
         ${items.map((g,i)=>{
@@ -3570,6 +3584,26 @@ function vgOpenLesson(mode,topicKey,band,practiceId){
           </div>`;
         }).join('')}
       </div>`;
+  }
+}
+
+// Teacher-only: delete a vocab/grammar lesson from the cloud
+async function vgDeleteLesson(mode,topicKey,band,practiceId){
+  if(!confirm(`Xóa vĩnh viễn bài ${mode==='vocab'?'từ vựng':'grammar'} này? Học sinh sẽ không còn thấy nữa.`))return;
+  toast('☁️ Đang xóa...','info',1500);
+  try{
+    if(mode==='vocab'){
+      await cloudDeleteVocabLesson(topicKey,band,practiceId);
+      vocabCache=vocabCache.filter(c=>!(c.topic_key===topicKey&&c.band===band&&c.practice_id===practiceId));
+    }else{
+      await cloudDeleteGrammarLesson(topicKey,band,practiceId);
+      grammarCache=grammarCache.filter(c=>!(c.topic_key===topicKey&&c.band===band&&c.practice_id===practiceId));
+    }
+    toast('✅ Đã xóa bài','success',2500);
+    vgOpenTopic(mode,topicKey);
+  }catch(e){
+    console.error(e);
+    toast('❌ Lỗi xóa: '+e.message,'error',5000);
   }
 }
 
@@ -6284,42 +6318,13 @@ function admConfirmAddTopic(){
   const bank = getCustomBank();
   if(!bank[key]) { bank[key] = {}; setCustomBank(bank); }
   admCurrent.topic = key;
-  
-  // Auto-create placeholder vocab/grammar entries cho topic mới
-  createPlaceholderVocabGrammar(key, name.trim());
-  
+
   closeAddTopicModal();
   renderAdminBuilder();
-  toast(`✅ Đã thêm topic "${name.trim()}" · Tạo bài tập cho topic này hoặc tạo Vocab/Grammar lessons`, 'success', 4500);
+  toast(`✅ Đã thêm topic "${name.trim()}" · Tạo bài tập rồi bấm "🤖 Phân tích AI" để có Vocab/Grammar`, 'success', 4500);
 }
 function admAddTopic(){
   showAddTopicModal();
-}
-
-// Auto-create placeholder vocab/grammar entries cho topic mới
-async function createPlaceholderVocabGrammar(topicKey, topicName){
-  try{
-    // Tạo placeholder vocab lesson cho Band 6+ 
-    const placeholderWords=[
-      {word:'example',meaning:'ví dụ',example:'For example, ...'},
-      {word:'develop',meaning:'phát triển',example:'The country is developing rapidly.'},
-      {word:'impact',meaning:'tác động',example:'Technology has a significant impact on society.'}
-    ];
-    await cloudSaveVocabLesson(topicKey, 'Band 6+', 1, `Vocab cơ bản - ${topicName}`, placeholderWords);
-    
-    // Tạo placeholder grammar lesson cho Band 6+
-    const placeholderGrammar=[
-      {type:'Tense',title:'Simple Present',description:'Diễn tả sự kiện, hành động lặp lại'},
-      {type:'Clause',title:'Relative Clauses',description:'Dùng để mô tả danh từ'}
-    ];
-    await cloudSaveGrammarLesson(topicKey, 'Band 6+', 1, `Grammar cơ bản - ${topicName}`, placeholderGrammar);
-    
-    // Sync lại vocab/grammar từ cloud
-    await syncVocabGrammar();
-  }catch(e){
-    console.warn('Failed to create placeholder vocab/grammar:',e);
-    // Không cần toast error vì đây chỉ là optional
-  }
 }
 
 async function admDeleteTopic(){
