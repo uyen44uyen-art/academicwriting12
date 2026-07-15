@@ -3938,7 +3938,7 @@ function renderTopics(){
     const t=getTopicMeta(k);
     const isCustom=!TOPICS[k];
     return `<button class="topic-btn ${k===currentTopic?'active':''}" onclick="selectTopicWithPicker('${k}',this)">
-      <span>${t.icon}</span><span>${t.name}</span>${isCustom?'<span style="font-size:0.6rem;opacity:0.7;margin-left:2px;">✎</span>':''}
+      <span>${t.icon}</span><span>${t.name}</span>${isCustom&&currentRole==='teacher'?'<span style="font-size:0.6rem;opacity:0.7;margin-left:2px;">✎</span>':''}
     </button>`;
   }).join('');
   // Add "+ Thêm topic" button (teacher only)
@@ -3967,10 +3967,10 @@ function selectTopicWithPicker(key,btn){
   btn.classList.add('active');
   renderPractices();
 
-  // Show icon picker only for custom topics
+  // Show icon picker only for custom topics, and only for teacher
   const pickerDiv=document.getElementById('topicIconPickerPanel');
   if(!pickerDiv)return;
-  if(TOPICS[key]){pickerDiv.style.display='none';return;}
+  if(TOPICS[key]||currentRole!=='teacher'){pickerDiv.style.display='none';return;}
   // Show icon picker near button
   const rect=btn.getBoundingClientRect();
   const pageRect=document.getElementById('practicePage').getBoundingClientRect();
