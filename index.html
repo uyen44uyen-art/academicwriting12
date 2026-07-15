@@ -3302,7 +3302,8 @@ function getTopicMeta(key){
 
 // Helper: get list of practices for a topic (merge built-in + from custom bank)
 function getPracticesForTopic(topicKey){
-  const builtin=TOPICS[topicKey]?.practices||[];
+  const deletedPractices=new Set(getDeletedDefaultPractices());
+  const builtin=(TOPICS[topicKey]?.practices||[]).filter(p=>!deletedPractices.has(topicKey+'|'+p.id));
   const bank=getCustomBank();
   const customEntries=[];
   // Gather all unique practiceIds from bank for this topic across all bands
@@ -3393,8 +3394,8 @@ function renderVGTopics(mode){
 
   const cache=mode==='vocab'?vocabCache:grammarCache;
   const topicKeys=new Set(cache.map(c=>c.topic_key));
-  // Also include built-in topics
-  Object.keys(TOPICS).forEach(k=>topicKeys.add(k));
+  // Also include built-in topics (minus teacher-deleted)
+  getVisibleTopicKeys().forEach(k=>topicKeys.add(k));
 
   const known=getKnownWords();
   const knownLower=Object.keys(known);
@@ -4033,8 +4034,8 @@ function renderTopics(){
   const sel=document.getElementById('topicSelector');
   const bank=getCustomBank();
   const customMeta=getCustomTopicsMeta();
-  // Merge built-in TOPICS + custom topics from bank + custom topics from meta (even if no exercises yet)
-  const allKeys=new Set([...Object.keys(TOPICS),...Object.keys(bank),...Object.keys(customMeta)]);
+  // Merge built-in TOPICS (minus teacher-deleted) + custom topics from bank + custom topics from meta
+  const allKeys=new Set([...getVisibleTopicKeys(),...Object.keys(bank),...Object.keys(customMeta)]);
   if(!allKeys.has(currentTopic))currentTopic=[...allKeys][0]||'health';
   sel.innerHTML=[...allKeys].map(k=>{
     const t=getTopicMeta(k);
@@ -5693,7 +5694,7 @@ function renderInsights(my){
   insights.push({type:'good',ico:'⭐',l:'Điểm Cao Nhất',v:best+'%',x:best>=90?'Tuyệt vời!':best>=80?'Rất tốt':'Cố gắng vượt qua nhé'});
 
   // Completion rate
-  const totalPossible=Object.keys(TOPICS).length*6*2;
+  const totalPossible=getVisibleTopicKeys().length*6*2;
   const unique=new Set(my.map(s=>`${s.topicKey}-${s.practice}-${s.band}`)).size;
   insights.push({type:'info',ico:'📋',l:'Tiến Độ Tổng',v:`${unique}/${totalPossible}`,x:`${Math.round(unique/totalPossible*100)}% bài tập đã thử`});
 
@@ -6106,7 +6107,7 @@ function renderAdminBuilder(){
   const topicSel=document.getElementById('admTopic');
   const bank=getCustomBank();
   const customMeta=getCustomTopicsMeta();
-  const allTopicKeys=new Set([...Object.keys(TOPICS),...Object.keys(bank),...Object.keys(customMeta)]);
+  const allTopicKeys=new Set([...getVisibleTopicKeys(),...Object.keys(bank),...Object.keys(customMeta)]);
   topicSel.innerHTML=[...allTopicKeys].map(k=>{
     const icon=TOPICS[k]?.icon||customMeta[k]?.icon||'📝';
     const name=TOPICS[k]?.name||customMeta[k]?.name||k;
@@ -6145,6 +6146,21 @@ function getCustomTopicsMeta(){
   try{return JSON.parse(localStorage.getItem('aw_custom_topics'))||{};}catch(e){return {};}
 }
 function setCustomTopicsMeta(m){localStorage.setItem('aw_custom_topics',JSON.stringify(m));}
+
+// Teacher-deleted DEFAULT topics/practices (built-in TOPICS/SENTENCES are hardcoded,
+// so deletion is tracked as a hide-list rather than mutating the constants).
+function getDeletedDefaultTopics(){
+  try{return JSON.parse(localStorage.getItem('aw_deleted_topics'))||[];}catch(e){return [];}
+}
+function setDeletedDefaultTopics(arr){localStorage.setItem('aw_deleted_topics',JSON.stringify(arr));}
+function getDeletedDefaultPractices(){
+  try{return JSON.parse(localStorage.getItem('aw_deleted_practices'))||[];}catch(e){return [];}
+}
+function setDeletedDefaultPractices(arr){localStorage.setItem('aw_deleted_practices',JSON.stringify(arr));}
+function getVisibleTopicKeys(){
+  const del=new Set(getDeletedDefaultTopics());
+  return Object.keys(TOPICS).filter(k=>!del.has(k));
+}
 
 
 const TOPIC_ICON_CATEGORIES = {
@@ -6271,18 +6287,16 @@ async function createPlaceholderVocabGrammar(topicKey, topicName){
 async function admDeleteTopic(){
   const currentKey=admCurrent.topic;
   const t=getTopicMeta(currentKey);
-  // Block deleting built-in topics
-  if(TOPICS[currentKey]){
-    toast(`❌ Không thể xóa topic mặc định "${t.name}"`,'warn',3000);
-    return;
-  }
+  const isBuiltin=!!TOPICS[currentKey];
+  if(!confirm(`Xóa vĩnh viễn topic "${t.icon} ${t.name}"${isBuiltin?' (mặc định)':''}?\n\nToàn bộ bài tập của topic này sẽ không còn hiển thị cho học sinh nữa.`))return;
+
   const bank=getCustomBank();
   const topicEntries=bank[currentKey]||{};
   const totalBai=Object.keys(topicEntries).reduce((sum,band)=>sum+topicEntries[band].length,0);
 
   toast(`🗑️ Đang xóa topic "${t.icon} ${t.name}"...`,'info',2000);
   try{
-    // Delete all entries on cloud
+    // Delete all custom entries on cloud
     const deletions=[];
     Object.keys(topicEntries).forEach(band=>{
       topicEntries[band].forEach(entry=>{
@@ -6300,8 +6314,24 @@ async function admDeleteTopic(){
     delete meta[currentKey];
     setCustomTopicsMeta(meta);
 
+    // Built-in topic: hide it (and its practice slots) via the deleted-defaults list
+    if(isBuiltin){
+      const delTopics=getDeletedDefaultTopics();
+      if(!delTopics.includes(currentKey)){
+        delTopics.push(currentKey);
+        setDeletedDefaultTopics(delTopics);
+      }
+      const delPractices=getDeletedDefaultPractices();
+      const prefix=currentKey+'|';
+      (TOPICS[currentKey]?.practices||[]).forEach(p=>{
+        const key=prefix+p.id;
+        if(!delPractices.includes(key))delPractices.push(key);
+      });
+      setDeletedDefaultPractices(delPractices);
+    }
+
     // Switch to first available topic
-    const remainingKeys=[...Object.keys(TOPICS),...Object.keys(meta)];
+    const remainingKeys=[...getVisibleTopicKeys(),...Object.keys(meta)];
     admCurrent.topic=remainingKeys[0]||'health';
 
     toast(`✅ Đã xóa topic "${t.name}"${totalBai?` và ${totalBai} bài tập`:''}`, 'success', 3000);
@@ -6940,22 +6970,45 @@ function renderAdminBank(){
       });
     });
   });
+  const customCount=items.length;
 
-  // Apply filters
-  if(admBankFilter.topic!=='all')items=items.filter(it=>it.topicKey===admBankFilter.topic);
-  if(admBankFilter.band!=='all')items=items.filter(it=>it.band===admBankFilter.band);
+  // Built-in (default) practices — deletable via a hide-list since they're hardcoded constants
+  const deletedTopics=new Set(getDeletedDefaultTopics());
+  const deletedPractices=new Set(getDeletedDefaultPractices());
+  let defaultItems=[];
+  Object.keys(TOPICS).forEach(topicKey=>{
+    if(deletedTopics.has(topicKey))return;
+    (TOPICS[topicKey].practices||[]).forEach(p=>{
+      if(deletedPractices.has(topicKey+'|'+p.id))return;
+      defaultItems.push({topicKey,band:'Band 6+/7+',practiceId:p.id,title:p.title,desc:p.desc,isDefault:true});
+    });
+  });
+  const defaultCount=defaultItems.length;
+
+  // Apply filters (shared across custom + default items)
+  if(admBankFilter.topic!=='all'){
+    items=items.filter(it=>it.topicKey===admBankFilter.topic);
+    defaultItems=defaultItems.filter(it=>it.topicKey===admBankFilter.topic);
+  }
+  if(admBankFilter.band!=='all'){
+    items=items.filter(it=>it.band===admBankFilter.band);
+    defaultItems=(admBankFilter.band==='Band 8+')?[]:defaultItems;
+  }
   if(admBankFilter.search){
     const q=admBankFilter.search.toLowerCase();
-    items=items.filter(it=>(it.title||'').toLowerCase().includes(q)||(it.desc||'').toLowerCase().includes(q));
+    const matchesQ=it=>(it.title||'').toLowerCase().includes(q)||(it.desc||'').toLowerCase().includes(q);
+    items=items.filter(matchesQ);
+    defaultItems=defaultItems.filter(matchesQ);
   }
 
-  // Sort newest first
+  // Sort newest first, default items (no updated timestamp) trail behind
   items.sort((a,b)=>(b.updated||0)-(a.updated||0));
+  items=[...items,...defaultItems];
 
   const el=document.getElementById('admBankList');
   // Build filter UI
-  const allTopicKeys=new Set(Object.keys(bank));
-  const totalAll=Object.keys(bank).reduce((a,t)=>a+Object.keys(bank[t]).reduce((b,bd)=>b+bank[t][bd].length,0),0);
+  const allTopicKeys=new Set([...getVisibleTopicKeys(),...Object.keys(bank)]);
+  const totalAll=customCount+defaultCount;
 
   let filterHTML=`
     <div class="adm-bank-filters">
@@ -6986,17 +7039,19 @@ function renderAdminBank(){
     const d=it.updated?new Date(it.updated):null;
     const dStr=d?formatDateTime(d):'';
     const dAgo=d?formatTimeAgo(d):'';
+    const countStr=it.isDefault?'Mặc định':`${it.sentences.length} câu`;
+    const acts=it.isDefault
+      ?`<button class="del" onclick="admDeleteDefaultPractice('${it.topicKey}',${it.practiceId})" title="Xóa bài mặc định">✕</button>`
+      :`<button class="edit" onclick="admEditEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Sửa">✎</button>
+        <button class="del" onclick="admDeleteEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Xóa">✕</button>`;
     return `<div class="adm-bank-item">
       <span class="ico" title="${t.name}">${t.icon}</span>
       <div class="info">
         <div class="ttl">${it.title||'Bài '+it.practiceId}</div>
-        <div class="meta">${t.name} · ${it.band} · Bài ${it.practiceId} · ${it.sentences.length} câu</div>
+        <div class="meta">${t.name} · ${it.band} · Bài ${it.practiceId} · ${countStr}</div>
         ${d?`<div class="meta-date" title="${dStr}">🕐 ${dAgo}</div>`:''}
       </div>
-      <div class="acts">
-        <button class="edit" onclick="admEditEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Sửa">✎</button>
-        <button class="del" onclick="admDeleteEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Xóa">✕</button>
-      </div>
+      <div class="acts">${acts}</div>
     </div>`;
   }).join('');
 
@@ -7064,6 +7119,22 @@ async function admDeleteEntry(topicKey,band,practiceId){
     console.error(e);
     toast('❌ Lỗi xóa: '+e.message,'error',5000);
   }
+}
+
+// Delete a built-in (default) practice slot — hidden via a local hide-list since
+// TOPICS/SENTENCES are hardcoded constants, not cloud/bank-backed data.
+function admDeleteDefaultPractice(topicKey,practiceId){
+  const t=getTopicMeta(topicKey);
+  const p=(TOPICS[topicKey]?.practices||[]).find(x=>x.id===practiceId);
+  if(!confirm(`Xóa vĩnh viễn bài mặc định "${p?.title||'Bài '+practiceId}" (${t.name})?\n\nHọc sinh sẽ không còn thấy bài này nữa.`))return;
+  const key=topicKey+'|'+practiceId;
+  const del=getDeletedDefaultPractices();
+  if(!del.includes(key)){
+    del.push(key);
+    setDeletedDefaultPractices(del);
+  }
+  toast('✅ Đã xóa bài mặc định','success',2500);
+  renderAdminBank();
 }
 
 function admExport(){
