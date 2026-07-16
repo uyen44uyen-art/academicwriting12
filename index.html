@@ -4555,9 +4555,12 @@ function renderExercise(){
   const ex=document.getElementById('exerciseContainer');
   ex.innerHTML=sents.map((s,i)=>{
     const words=s.en.split(' ');
+    const viHtml=(s.vi&&s.vi.trim())
+      ? s.vi
+      : '<span style="color:var(--warning);font-style:normal;font-weight:700;">⚠️ Câu này chưa có bản dịch tiếng Việt. Giáo viên vào <b>🛠️ Quản Lý Bài</b> → sửa bài này → bấm <b>🌐</b> để dịch rồi lưu lại.</span>';
     return `<div class="sentence-block" id="sent-${i}" data-correct-en="${s.en.replace(/"/g,'&quot;')}">
       <div class="sentence-label">Câu ${i+1}</div>
-      <div class="sentence-vi">${s.vi}</div>
+      <div class="sentence-vi">${viHtml}</div>
       <div class="word-row" id="word-row-${i}">${words.map((w,wi)=>{
         const cleanWord=w.replace(/[.,!?;:'"()]/g,'').toLowerCase();
         const punc=w.match(/[.,!?;:'"()]+$/);
