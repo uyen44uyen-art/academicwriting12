@@ -1640,7 +1640,7 @@ input,select,textarea{font-family:inherit;}
 .adm-bank-filter-row{display:flex;gap:6px;margin-bottom:8px;}
 .adm-bank-filter-sel{flex:1;padding:6px 8px;border:1.5px solid var(--border);background:var(--bg-soft);color:var(--text);border-radius:7px;font-size:0.78rem;outline:none;font-weight:600;cursor:pointer;transition:all 0.2s ease;font-family:inherit;}
 .adm-bank-filter-sel:focus{border-color:var(--teacher);}
-.adm-bank-count{font-size:0.74rem;color:var(--text-mute);font-weight:600;display:flex;align-items:center;}
+.adm-bank-count{font-size:0.74rem;color:var(--text-mute);font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .adm-bank-scroll{max-height:480px;overflow-y:auto;padding-right:4px;}
 .adm-bank-item{padding:10px 12px;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:0.82rem;display:flex;align-items:center;gap:8px;transition:all 0.2s ease;}
 .adm-bank-item:hover{border-color:var(--teacher);}
@@ -1653,6 +1653,23 @@ input,select,textarea{font-family:inherit;}
 .adm-bank-item .acts button{padding:3px 7px;border-radius:6px;font-size:0.7rem;font-weight:700;background:var(--bg-elev);border:1px solid var(--border);color:var(--text-soft);transition:all 0.15s ease;}
 .adm-bank-item .acts button.del:hover{background:var(--danger);color:white;border-color:var(--danger);}
 .adm-bank-item .acts button.edit:hover{background:var(--teacher);color:white;border-color:var(--teacher);}
+.adm-bank-item{cursor:pointer;}
+.adm-bank-item.selected{border-color:var(--danger);background:var(--danger-light);}
+.adm-bank-item .sel-chk{width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:var(--danger);}
+.adm-bank-bulkbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;padding:8px 10px;background:var(--danger-light);border:1px solid var(--danger);border-radius:9px;font-size:0.78rem;font-weight:700;color:var(--danger);animation:cardIn 0.2s ease both;}
+.adm-bank-bulkbar button{padding:5px 11px;border-radius:7px;font-size:0.74rem;font-weight:800;border:none;cursor:pointer;font-family:inherit;transition:all 0.15s ease;}
+.adm-bank-bulkbar .bulk-del{background:var(--danger);color:white;}
+.adm-bank-bulkbar .bulk-del:hover{filter:brightness(1.1);}
+.adm-bank-bulkbar .bulk-clear{background:transparent;color:var(--danger);border:1px solid var(--danger) !important;}
+.adm-bank-selectall{display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--text-mute);font-weight:600;cursor:pointer;}
+.adm-bank-selectall input{width:14px;height:14px;cursor:pointer;accent-color:var(--teacher);}
+.adm-dm-sent{padding:12px 14px;background:var(--bg-soft);border-radius:10px;border:1px solid var(--border);margin-bottom:8px;}
+.adm-dm-sent .en{color:var(--text);font-weight:600;font-size:0.88rem;margin-bottom:4px;}
+.adm-dm-sent .vi{color:var(--text-soft);font-size:0.82rem;font-style:italic;}
+.adm-dm-meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.adm-dm-meta-item{background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.adm-dm-meta-item .l{font-size:0.68rem;color:var(--text-mute);font-weight:800;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;}
+.adm-dm-meta-item .v{font-size:0.88rem;color:var(--text);font-weight:700;}
 
 /* ========== LESSON LEARNING STYLES ========== */
 .lesson-vocab-result{
@@ -2444,6 +2461,16 @@ Hoặc bỏ trống — sau khi tách câu, bấm nút 'Dịch tự động tấ
   </div>
 </div>
 
+<!-- ========== BANK ITEM DETAIL MODAL ========== -->
+<div class="modal" id="admItemDetailModal">
+  <div class="modal-card lg" style="position:relative;">
+    <button class="modal-close" onclick="closeAdmItemDetailModal()">✕</button>
+    <h2 id="admDmTitle">Chi Tiết Bài Tập</h2>
+    <p id="admDmSub" style="margin-bottom:20px;"></p>
+    <div id="admDmBody"></div>
+  </div>
+</div>
+
 <!-- ========== AI ANALYZE PREVIEW MODAL ========== -->
 <div class="ai-modal" id="aiModal">
   <div class="ai-modal-inner">
@@ -2504,6 +2531,11 @@ Hoặc bỏ trống — sau khi tách câu, bấm nút 'Dịch tự động tấ
 
 <script>
 // ============ DATA ============
+// When true, the hardcoded sample/default practices below are never shown to
+// anyone (all devices) — students only see teacher-created cloud content.
+// Flip to false to bring the built-in sample lessons back.
+const HIDE_DEFAULT_PRACTICES = true;
+
 const TOPICS = {
   health:{name:'Health',icon:'❤️',desc:'Các bài tập viết học thuật về chủ đề sức khỏe công cộng.',practices:[
     {id:1,title:'Sức khỏe cộng đồng và trách nhiệm cá nhân',desc:'Some people think that a healthy lifestyle is a responsibility of individuals, while others think it is the responsibility of the government.'},
@@ -3442,7 +3474,7 @@ function getTopicMeta(key){
 // Helper: get list of practices for a topic (merge built-in + from custom bank)
 function getPracticesForTopic(topicKey){
   const deletedPractices=new Set(getDeletedDefaultPractices());
-  const builtin=(TOPICS[topicKey]?.practices||[]).filter(p=>!deletedPractices.has(topicKey+'|'+p.id));
+  const builtin=HIDE_DEFAULT_PRACTICES?[]:(TOPICS[topicKey]?.practices||[]).filter(p=>!deletedPractices.has(topicKey+'|'+p.id));
   const bank=getCustomBank();
   const customEntries=[];
   // Gather all unique practiceIds from bank for this topic across all bands
@@ -3541,7 +3573,7 @@ function renderVGTopics(mode){
 
   const el=document.getElementById(prefix+'TopicsView');
   if(!topicKeys.size){
-    el.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--text-mute);"><p style="font-size:1.05rem;font-weight:700;margin-bottom:8px;">Chưa có '+(mode==='vocab'?'từ vựng':'grammar')+' nào</p><p style="font-size:0.88rem;">Giáo viên cần tạo bài và bấm "🤖 Phân tích AI" để có dữ liệu.</p></div>';
+    el.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--text-mute);"><p style="font-size:1.05rem;font-weight:700;margin-bottom:8px;">Chưa có '+(mode==='vocab'?'từ vựng':'grammar')+' nào</p></div>';
     return;
   }
 
@@ -7111,6 +7143,10 @@ function admClearEssay(){
 
 // Bank filter state
 let admBankFilter={topic:'all',band:'all',search:''};
+// Bulk-select state for the bank list — keyed by "topicKey||band||practiceId||isDefault(0/1)"
+let admBankSelected=new Set();
+let admBankLastItems=[];
+function admItemKey(it){return `${it.topicKey}||${it.band}||${it.practiceId}||${it.isDefault?1:0}`;}
 
 function renderAdminBank(){
   const bank=getCustomBank();
@@ -7124,17 +7160,20 @@ function renderAdminBank(){
   });
   const customCount=items.length;
 
-  // Built-in (default) practices — deletable via a hide-list since they're hardcoded constants
+  // Built-in (default) practices — deletable via a hide-list since they're hardcoded constants.
+  // Globally suppressed when HIDE_DEFAULT_PRACTICES is on.
   const deletedTopics=new Set(getDeletedDefaultTopics());
   const deletedPractices=new Set(getDeletedDefaultPractices());
   let defaultItems=[];
-  Object.keys(TOPICS).forEach(topicKey=>{
-    if(deletedTopics.has(topicKey))return;
-    (TOPICS[topicKey].practices||[]).forEach(p=>{
-      if(deletedPractices.has(topicKey+'|'+p.id))return;
-      defaultItems.push({topicKey,band:'Band 6+/7+',practiceId:p.id,title:p.title,desc:p.desc,isDefault:true});
+  if(!HIDE_DEFAULT_PRACTICES){
+    Object.keys(TOPICS).forEach(topicKey=>{
+      if(deletedTopics.has(topicKey))return;
+      (TOPICS[topicKey].practices||[]).forEach(p=>{
+        if(deletedPractices.has(topicKey+'|'+p.id))return;
+        defaultItems.push({topicKey,band:'Band 6+/7+',practiceId:p.id,title:p.title,desc:p.desc,isDefault:true});
+      });
     });
-  });
+  }
   const defaultCount=defaultItems.length;
 
   // Apply filters (shared across custom + default items)
@@ -7161,6 +7200,10 @@ function renderAdminBank(){
   // Build filter UI
   const allTopicKeys=new Set([...getVisibleTopicKeys(),...Object.keys(bank)]);
   const totalAll=customCount+defaultCount;
+  admBankLastItems=items;
+  // Drop selections that scrolled out of the current filter/dataset so the count stays accurate
+  const visibleKeys=new Set(items.map(admItemKey));
+  admBankSelected.forEach(k=>{if(!visibleKeys.has(k))admBankSelected.delete(k);});
 
   let filterHTML=`
     <div class="adm-bank-filters">
@@ -7177,9 +7220,22 @@ function renderAdminBank(){
           <option value="Band 8+" ${admBankFilter.band==='Band 8+'?'selected':''}>Band 8+</option>
         </select>
       </div>
-      <div class="adm-bank-count">Hiển thị <b>${items.length}</b>/${totalAll} bài${(admBankFilter.topic!=='all'||admBankFilter.band!=='all'||admBankFilter.search)?` <button onclick="admClearBankFilter()" style="font-size:0.7rem;background:var(--danger-light);color:var(--danger);padding:2px 8px;border-radius:5px;border:none;cursor:pointer;font-weight:700;margin-left:6px;">✕ Clear</button>`:''}</div>
+      <div class="adm-bank-count">
+        <label class="adm-bank-selectall"><input type="checkbox" ${items.length&&items.every(it=>admBankSelected.has(admItemKey(it)))?'checked':''} onchange="admToggleSelectAllBank(this.checked)"> Chọn tất cả</label>
+        <span>Hiển thị <b>${items.length}</b>/${totalAll} bài</span>
+        ${(admBankFilter.topic!=='all'||admBankFilter.band!=='all'||admBankFilter.search)?`<button onclick="admClearBankFilter()" style="font-size:0.7rem;background:var(--danger-light);color:var(--danger);padding:2px 8px;border-radius:5px;border:none;cursor:pointer;font-weight:700;">✕ Clear</button>`:''}
+        ${defaultCount?`<button onclick="admDeleteAllDefaults()" style="font-size:0.7rem;background:var(--warning-light);color:var(--warning);padding:2px 8px;border-radius:5px;border:none;cursor:pointer;font-weight:700;">🗑️ Xóa tất cả bài mặc định</button>`:''}
+      </div>
     </div>
   `;
+
+  if(admBankSelected.size>0){
+    filterHTML+=`<div class="adm-bank-bulkbar">
+      <span>✅ Đã chọn ${admBankSelected.size} bài</span>
+      <button class="bulk-del" onclick="admBulkDeleteSelected()">🗑️ Xóa ${admBankSelected.size} bài đã chọn</button>
+      <button class="bulk-clear" onclick="admBankSelected.clear();renderAdminBank();">Bỏ chọn</button>
+    </div>`;
+  }
 
   if(!items.length){
     el.innerHTML=filterHTML+`<div style="text-align:center;padding:24px 10px;color:var(--text-mute);font-size:0.84rem;">${totalAll===0?'Chưa có bài nào.<br>Tạo bài đầu tiên ở bên trái!':'Không có bài nào khớp filter.'}</div>`;
@@ -7192,11 +7248,14 @@ function renderAdminBank(){
     const dStr=d?formatDateTime(d):'';
     const dAgo=d?formatTimeAgo(d):'';
     const countStr=it.isDefault?'Mặc định':`${it.sentences.length} câu`;
+    const key=admItemKey(it);
+    const bandArg=it.band.replace(/'/g,"\\'");
     const acts=it.isDefault
-      ?`<button class="del" onclick="admDeleteDefaultPractice('${it.topicKey}',${it.practiceId})" title="Xóa bài mặc định">✕</button>`
-      :`<button class="edit" onclick="admEditEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Sửa">✎</button>
-        <button class="del" onclick="admDeleteEntry('${it.topicKey}','${it.band.replace(/'/g,"\\'")}',${it.practiceId})" title="Xóa">✕</button>`;
-    return `<div class="adm-bank-item">
+      ?`<button class="del" onclick="event.stopPropagation();admDeleteDefaultPractice('${it.topicKey}',${it.practiceId})" title="Xóa bài mặc định">✕</button>`
+      :`<button class="edit" onclick="event.stopPropagation();admEditEntry('${it.topicKey}','${bandArg}',${it.practiceId})" title="Sửa">✎</button>
+        <button class="del" onclick="event.stopPropagation();admDeleteEntry('${it.topicKey}','${bandArg}',${it.practiceId})" title="Xóa">✕</button>`;
+    return `<div class="adm-bank-item ${admBankSelected.has(key)?'selected':''}" onclick="admShowItemDetail('${it.topicKey}','${bandArg}',${it.practiceId},${it.isDefault?1:0})">
+      <input type="checkbox" class="sel-chk" ${admBankSelected.has(key)?'checked':''} onclick="event.stopPropagation()" onchange="admToggleBankSelect('${key.replace(/'/g,"\\'")}',this)">
       <span class="ico" title="${t.name}">${t.icon}</span>
       <div class="info">
         <div class="ttl">${it.title||'Bài '+it.practiceId}</div>
@@ -7208,6 +7267,123 @@ function renderAdminBank(){
   }).join('');
 
   el.innerHTML=filterHTML+`<div class="adm-bank-scroll">${itemsHTML}</div>`;
+}
+
+function admToggleBankSelect(key,chk){
+  if(chk.checked)admBankSelected.add(key);else admBankSelected.delete(key);
+  renderAdminBank();
+}
+
+function admToggleSelectAllBank(checked){
+  if(checked)admBankLastItems.forEach(it=>admBankSelected.add(admItemKey(it)));
+  else admBankLastItems.forEach(it=>admBankSelected.delete(admItemKey(it)));
+  renderAdminBank();
+}
+
+async function admBulkDeleteSelected(){
+  const keys=[...admBankSelected];
+  if(!keys.length)return;
+  if(!confirm(`Xóa vĩnh viễn ${keys.length} bài đã chọn?\n\nHọc sinh sẽ không còn thấy các bài này nữa.`))return;
+  toast(`🗑️ Đang xóa ${keys.length} bài...`,'info',2000);
+  let ok=0,fail=0;
+  await Promise.all(keys.map(async key=>{
+    const [topicKey,band,practiceIdStr,isDefaultStr]=key.split('||');
+    const practiceId=Number(practiceIdStr);
+    try{
+      if(isDefaultStr==='1'){
+        admHideDefaultPractice(topicKey,practiceId);
+      }else{
+        await cloudDeleteExercise(topicKey,band,practiceId);
+        admRemoveFromLocalBank(topicKey,band,practiceId);
+      }
+      ok++;
+    }catch(e){
+      console.error(e);
+      fail++;
+    }
+  }));
+  admBankSelected.clear();
+  toast(fail?`✅ Đã xóa ${ok} bài · ❌ ${fail} bài lỗi`:`✅ Đã xóa ${ok} bài`,fail?'warn':'success',3000);
+  renderAdminBank();
+  admLoadExisting();
+}
+
+// Hides every built-in default practice across all topics — a one-click
+// version of admDeleteAllDefaults's confirm flow, reusing the same hide-list.
+function admDeleteAllDefaults(){
+  const deletedTopics=new Set(getDeletedDefaultTopics());
+  const deletedPractices=new Set(getDeletedDefaultPractices());
+  let count=0;
+  Object.keys(TOPICS).forEach(topicKey=>{
+    if(deletedTopics.has(topicKey))return;
+    (TOPICS[topicKey].practices||[]).forEach(p=>{
+      if(!deletedPractices.has(topicKey+'|'+p.id))count++;
+    });
+  });
+  if(!count){toast('Không còn bài mặc định nào để xóa','info');return;}
+  if(!confirm(`Xóa vĩnh viễn TOÀN BỘ ${count} bài mặc định (ở mọi topic)?\n\nHọc sinh sẽ không còn thấy bài mặc định nào nữa — chỉ còn bài do bạn tự tạo.\n\nLưu ý: thao tác này chỉ ẩn bài mặc định trên trình duyệt này. Nếu học sinh dùng thiết bị khác, họ vẫn thấy bài mặc định như cũ.`))return;
+  Object.keys(TOPICS).forEach(topicKey=>{
+    if(deletedTopics.has(topicKey))return;
+    (TOPICS[topicKey].practices||[]).forEach(p=>admHideDefaultPractice(topicKey,p.id));
+  });
+  toast(`✅ Đã xóa ${count} bài mặc định`,'success',3000);
+  renderAdminBank();
+}
+
+function admHideDefaultPractice(topicKey,practiceId){
+  const key=topicKey+'|'+practiceId;
+  const del=getDeletedDefaultPractices();
+  if(!del.includes(key)){
+    del.push(key);
+    setDeletedDefaultPractices(del);
+  }
+}
+
+function admRemoveFromLocalBank(topicKey,band,practiceId){
+  const bank=getCustomBank();
+  if(bank[topicKey]?.[band]){
+    bank[topicKey][band]=bank[topicKey][band].filter(e=>e.practiceId!==practiceId);
+    if(!bank[topicKey][band].length)delete bank[topicKey][band];
+    if(!Object.keys(bank[topicKey]).length)delete bank[topicKey];
+  }
+  setCustomBank(bank);
+}
+
+function admShowItemDetail(topicKey,band,practiceId,isDefault){
+  const t=getTopicMeta(topicKey);
+  document.getElementById('admItemDetailModal').classList.add('show');
+  const body=document.getElementById('admDmBody');
+  if(isDefault){
+    const p=(TOPICS[topicKey]?.practices||[]).find(x=>x.id===practiceId);
+    document.getElementById('admDmTitle').textContent=(p?.title||'Bài '+practiceId);
+    document.getElementById('admDmSub').textContent=`${t.icon} ${t.name} · ${band} · Bài ${practiceId} · Mặc định`;
+    const sentences=SENTENCES[topicKey]||[];
+    body.innerHTML=`
+      <div class="adm-dm-meta-grid">
+        <div class="adm-dm-meta-item"><div class="l">Đề bài</div><div class="v" style="font-weight:600;font-size:0.82rem;">${p?.desc||'—'}</div></div>
+      </div>
+      ${sentences.length?`<p style="font-weight:700;color:var(--text);margin-bottom:10px;">📄 Bài mẫu (${sentences.length} câu)</p>${sentences.map(s=>`<div class="adm-dm-sent"><div class="en">${s.en}</div><div class="vi">${s.vi}</div></div>`).join('')}`:`<p style="color:var(--text-mute);">Chưa có bài mẫu cho topic này.</p>`}
+    `;
+    return;
+  }
+  const bank=getCustomBank();
+  const it=bank[topicKey]?.[band]?.find(e=>e.practiceId===practiceId);
+  if(!it){body.innerHTML='<p>Không tìm thấy bài này.</p>';return;}
+  document.getElementById('admDmTitle').textContent=it.title||'Bài '+practiceId;
+  document.getElementById('admDmSub').textContent=`${t.icon} ${t.name} · ${band} · Bài ${practiceId} · ${it.sentences.length} câu`;
+  body.innerHTML=`
+    <div class="adm-dm-meta-grid">
+      <div class="adm-dm-meta-item"><div class="l">Đề bài (EN)</div><div class="v" style="font-weight:600;font-size:0.82rem;">${it.desc||'—'}</div></div>
+      ${it.descVi?`<div class="adm-dm-meta-item"><div class="l">Đề bài (VI)</div><div class="v" style="font-weight:600;font-size:0.82rem;">${it.descVi}</div></div>`:''}
+      ${it.updated?`<div class="adm-dm-meta-item"><div class="l">Cập nhật</div><div class="v">${formatDateTime(new Date(it.updated))}</div></div>`:''}
+    </div>
+    <p style="font-weight:700;color:var(--text);margin-bottom:10px;">📄 Nội dung (${it.sentences.length} câu)</p>
+    ${it.sentences.map(s=>`<div class="adm-dm-sent"><div class="en">${s.en}</div><div class="vi">${s.vi||''}</div></div>`).join('')}
+  `;
+}
+
+function closeAdmItemDetailModal(){
+  document.getElementById('admItemDetailModal').classList.remove('show');
 }
 
 function admSetBankFilter(key,val){
@@ -7257,13 +7433,7 @@ async function admDeleteEntry(topicKey,band,practiceId){
   toast('☁️ Đang xóa khỏi cloud...','info',1500);
   try{
     await cloudDeleteExercise(topicKey,band,practiceId);
-    const bank=getCustomBank();
-    if(bank[topicKey]?.[band]){
-      bank[topicKey][band]=bank[topicKey][band].filter(e=>e.practiceId!==practiceId);
-      if(!bank[topicKey][band].length)delete bank[topicKey][band];
-      if(!Object.keys(bank[topicKey]).length)delete bank[topicKey];
-    }
-    setCustomBank(bank);
+    admRemoveFromLocalBank(topicKey,band,practiceId);
     toast('✅ Đã xóa bài tập','success',2500);
     renderAdminBank();
     admLoadExisting();
@@ -7279,12 +7449,7 @@ function admDeleteDefaultPractice(topicKey,practiceId){
   const t=getTopicMeta(topicKey);
   const p=(TOPICS[topicKey]?.practices||[]).find(x=>x.id===practiceId);
   if(!confirm(`Xóa vĩnh viễn bài mặc định "${p?.title||'Bài '+practiceId}" (${t.name})?\n\nHọc sinh sẽ không còn thấy bài này nữa.`))return;
-  const key=topicKey+'|'+practiceId;
-  const del=getDeletedDefaultPractices();
-  if(!del.includes(key)){
-    del.push(key);
-    setDeletedDefaultPractices(del);
-  }
+  admHideDefaultPractice(topicKey,practiceId);
   toast('✅ Đã xóa bài mặc định','success',2500);
   renderAdminBank();
 }
